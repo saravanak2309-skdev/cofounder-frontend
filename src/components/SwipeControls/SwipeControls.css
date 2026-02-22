@@ -1,0 +1,56 @@
+.swipe-controls {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.control-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 1.1rem 2rem;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    min-width: 110px;
+}
+
+.pass-btn {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.pass-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.2);
+}
+
+.connect-btn {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.connect-btn:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+}
+
+.btn-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
