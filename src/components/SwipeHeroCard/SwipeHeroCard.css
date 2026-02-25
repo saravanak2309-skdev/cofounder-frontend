@@ -1,0 +1,165 @@
+.swipe-hero-stage {
+    position: relative;
+    width: 380px;
+    height: 540px;
+    perspective: 1000px;
+}
+
+.hero-card-animator {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    cursor: grab;
+}
+
+.hero-card-animator:active {
+    cursor: grabbing;
+}
+
+.hero-card-premium {
+    width: 100%;
+    height: 100%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 36px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(40px);
+}
+
+.card-image-placeholder {
+    height: 220px;
+    background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+}
+
+.card-image-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, var(--primary-low) 0%, transparent 70%);
+}
+
+.hero-card-initials {
+    font-size: 5rem;
+    font-weight: 800;
+    color: var(--primary);
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.hero-card-content {
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+
+.hero-card-header h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+}
+
+.hero-card-role {
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.hero-card-loc {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.hero-card-bio {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.hero-card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-card-tags {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.hero-card-tags span {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.hero-card-match {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--secondary);
+}
+
+.hero-card-swipe-prompt {
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.hero-card-shadow-1,
+.hero-card-shadow-2 {
+    position: absolute;
+    inset: 0;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 36px;
+    z-index: 1;
+}
+
+.hero-card-shadow-1 {
+    transform: translate(12px, 12px) scale(0.96);
+    opacity: 0.3;
+}
+
+.hero-card-shadow-2 {
+    transform: translate(24px, 24px) scale(0.92);
+    opacity: 0.15;
+}
+
+@media (max-width: 480px) {
+    .swipe-hero-stage {
+        width: 320px;
+        height: 480px;
+    }
+}

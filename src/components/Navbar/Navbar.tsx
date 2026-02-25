@@ -1,5 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import BoltIcon from '@mui/icons-material/Bolt';
+import PersonIcon from '@mui/icons-material/Person';
+import FM_logo from '../../assets/FM_logo.png';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -7,10 +12,10 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const navItems = [
-        { path: '/swipe', label: 'Discover', icon: '🔥' },
-        { path: '/matches', label: 'Matches', icon: '💬' },
-        { path: '/filters', label: 'Filters', icon: '⚡' },
-        { path: '/profile', label: 'Profile', icon: '👤' },
+        { path: '/swipe', label: 'Discover', icon: <LocalFireDepartmentIcon /> },
+        { path: '/matches', label: 'Matches', icon: <ChatBubbleIcon /> },
+        { path: '/filters', label: 'Filters', icon: <BoltIcon /> },
+        { path: '/profile', label: 'Profile', icon: <PersonIcon /> },
     ];
 
     const isActive = (path: string) => location.pathname === path;
@@ -19,7 +24,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    <span className="logo-icon">💼</span>
+                    <img src={FM_logo} alt="Founder's Matrimony" className="logo-img" />
                     <span className="logo-text">Founder's Matrimony</span>
                 </Link>
 

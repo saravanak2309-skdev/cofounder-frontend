@@ -1,199 +1,284 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import TuneIcon from '@mui/icons-material/Tune';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SchoolIcon from '@mui/icons-material/School';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import BoltIcon from '@mui/icons-material/Bolt';
+import FactoryIcon from '@mui/icons-material/Factory';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import GroupIcon from '@mui/icons-material/Group';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import HistoryIcon from '@mui/icons-material/History';
 import FounderCard from '../../components/FounderCard/FounderCard';
-import SkillBadge from '../../components/SkillBadge/SkillBadge';
 import { mockFounders } from '../../data/mockFounders';
 import './FiltersPage.css';
 
-const skillOptions = ['React', 'Node.js', 'Python', 'Machine Learning', 'Figma', 'Product Management', 'Sales', 'Growth Hacking', 'Finance', 'Operations'];
-const industryOptions = ['FinTech', 'EdTech', 'HealthTech', 'SaaS', 'E-Commerce', 'AgriTech', 'D2C', 'Logistics', 'AI/ML', 'CleanTech'];
+const skillOptions = ['React', 'Node.js', 'Python', 'AI/ML', 'Product Strategy', 'Growth', 'GTM', 'Sales', 'UX Design', 'Finance'];
+const industryOptions = ['FinTech', 'SaaS', 'HealthTech', 'EdTech', 'CleanTech', 'D2C', 'Web3', 'AI', 'Logistics'];
+const commitmentOptions = ['Full-time', 'Part-time', 'Founder-at-large'];
+
+const savedSearches = [
+    { id: '1', name: 'Tech Founders in BLR', icon: <HistoryIcon fontSize="small" /> },
+    { id: '2', name: 'GTM Experts (5y+)', icon: <HistoryIcon fontSize="small" /> },
+];
 
 const FiltersPage = () => {
     const [filters, setFilters] = useState({
         location: '',
-        minExperience: 0,
-        maxExperience: 20,
+        minExp: 0,
         education: '',
         skills: [] as string[],
-        industries: [] as string[],
+        domains: [] as string[],
         commitment: '',
         role: '',
-        startupStage: '',
     });
-    const [savedFilters, setSavedFilters] = useState(false);
 
-    const toggleItem = (key: 'skills' | 'industries', value: string) => {
-        setFilters(f => ({
-            ...f,
-            [key]: f[key].includes(value) ? f[key].filter(v => v !== value) : [...f[key], value],
+    const [activeSearchId, setActiveSearchId] = useState<string | null>(null);
+
+    const toggleFilter = (key: 'skills' | 'domains', value: string) => {
+        setFilters(prev => ({
+            ...prev,
+            [key]: prev[key].includes(value)
+                ? prev[key].filter(i => i !== value)
+                : [...prev[key], value]
         }));
     };
 
-    const filteredFounders = mockFounders.filter(f => {
-        if (filters.commitment && f.commitment !== filters.commitment) return false;
-        if (filters.role && f.role !== filters.role) return false;
-        if (filters.minExperience && f.yearsOfExperience < filters.minExperience) return false;
-        if (filters.maxExperience && f.yearsOfExperience > filters.maxExperience) return false;
-        if (filters.location && !f.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
-        if (filters.industries.length > 0 && !filters.industries.some(ind => f.industries.includes(ind))) return false;
-        if (filters.skills.length > 0 && !filters.skills.some(sk => f.skills.includes(sk))) return false;
-        return true;
-    });
+    const filteredFounders = useMemo(() => {
+        return mockFounders.filter(f => {
+            if (filters.location && !f.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
+            if (filters.minExp > 0 && f.yearsOfExperience < filters.minExp) return false;
+            if (filters.role && f.role !== filters.role) return false;
+            if (filters.commitment && f.commitment !== filters.commitment) return false;
+            if (filters.domains.length > 0 && !filters.domains.some(d => f.industries.includes(d))) return false;
+            if (filters.skills.length > 0 && !filters.skills.some(s => f.skills.includes(s))) return false;
+            return true;
+        });
+    }, [filters]);
+
+    const recommendations = useMemo(() => {
+        // Simple mock recommendations: founders with highest experience
+        return [...mockFounders].sort((a, b) => b.yearsOfExperience - a.yearsOfExperience).slice(0, 3);
+    }, []);
+
+    const resetFilters = () => {
+        setFilters({
+            location: '',
+            minExp: 0,
+            education: '',
+            skills: [],
+            domains: [],
+            commitment: '',
+            role: '',
+        });
+        setActiveSearchId(null);
+    };
 
     return (
         <div className="filters-page">
-            <div className="filters-layout">
-                {/* Filters Panel */}
-                <aside className="filters-panel">
-                    <div className="filters-header">
-                        <h2 className="filters-title">⚡ Advanced Filters</h2>
-                        <button className="clear-btn" onClick={() => setFilters({
-                            location: '', minExperience: 0, maxExperience: 20,
-                            education: '', skills: [], industries: [], commitment: '', role: '', startupStage: '',
-                        })}>
-                            Clear All
+            <div className="fp-glow fp-glow-1" />
+
+            <div className="fp-container">
+                {/* Left Sidebar: Filters */}
+                <aside className="fp-sidebar">
+                    <div className="fp-card filters-panel">
+                        <h2 className="fp-title">
+                            <TuneIcon sx={{ color: 'var(--primary)' }} /> Filters
+                        </h2>
+
+                        {/* Search Preference */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><BusinessCenterIcon fontSize="inherit" /> Role Preference</p>
+                            <select
+                                className="fp-input"
+                                value={filters.role}
+                                onChange={e => setFilters({ ...filters, role: e.target.value })}
+                            >
+                                <option value="">Any Role</option>
+                                <option value="Tech">Tech Founder</option>
+                                <option value="Business">Business Founder</option>
+                                <option value="Design">Design Founder</option>
+                                <option value="Operations">Operations Founder</option>
+                            </select>
+                        </div>
+
+                        {/* Education */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><SchoolIcon fontSize="inherit" /> Academic Background</p>
+                            <select
+                                className="fp-input"
+                                value={filters.education}
+                                onChange={e => setFilters({ ...filters, education: e.target.value })}
+                            >
+                                <option value="">Any Background</option>
+                                <option value="Ivy League">Ivy League / Tier 1</option>
+                                <option value="Masters">Master's Degree</option>
+                                <option value="PhD">Research / PhD</option>
+                                <option value="Self-taught">Self-taught / Alt-Ed</option>
+                            </select>
+                        </div>
+
+                        {/* Location */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><LocationOnIcon fontSize="inherit" /> Geographic Focus</p>
+                            <input
+                                className="fp-input"
+                                placeholder="Location (City, Remote...)"
+                                value={filters.location}
+                                onChange={e => setFilters({ ...filters, location: e.target.value })}
+                            />
+                        </div>
+
+                        {/* Experience */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><AccessTimeIcon fontSize="inherit" /> Minimum Experience</p>
+                            <div className="range-row">
+                                <div className="range-labels">
+                                    <span>{filters.minExp} Years</span>
+                                    <span>20+</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    className="range-input"
+                                    min="0" max="20"
+                                    value={filters.minExp}
+                                    onChange={e => setFilters({ ...filters, minExp: parseInt(e.target.value) })}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Commitment */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><GroupIcon fontSize="inherit" /> Commitment</p>
+                            <div className="toggle-group">
+                                {commitmentOptions.map(opt => (
+                                    <button
+                                        key={opt}
+                                        className={`toggle-btn ${filters.commitment === opt ? 'active' : ''}`}
+                                        onClick={() => setFilters({ ...filters, commitment: opt === filters.commitment ? '' : opt })}
+                                    >
+                                        {opt.split('-')[0]}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Domain Expertise */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><FactoryIcon fontSize="inherit" /> Domain Expertise</p>
+                            <div className="chip-grid">
+                                {industryOptions.map(ind => (
+                                    <button
+                                        key={ind}
+                                        className={`chip ${filters.domains.includes(ind) ? 'active' : ''}`}
+                                        onClick={() => toggleFilter('domains', ind)}
+                                    >
+                                        {ind}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Skills */}
+                        <div className="filter-group">
+                            <p className="fp-section-title"><BoltIcon fontSize="inherit" /> Strategic Skills</p>
+                            <div className="chip-grid">
+                                {skillOptions.map(skill => (
+                                    <button
+                                        key={skill}
+                                        className={`chip ${filters.skills.includes(skill) ? 'active' : ''}`}
+                                        onClick={() => toggleFilter('skills', skill)}
+                                    >
+                                        {skill}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button className="apply-btn" onClick={resetFilters}>
+                            Reset Discovery
                         </button>
                     </div>
-
-                    {/* Location */}
-                    <div className="filter-group">
-                        <label className="filter-label">📍 Location</label>
-                        <input
-                            className="filter-input"
-                            placeholder="e.g. Bangalore, Mumbai..."
-                            value={filters.location}
-                            onChange={e => setFilters(f => ({ ...f, location: e.target.value }))}
-                        />
-                    </div>
-
-                    {/* Experience Range */}
-                    <div className="filter-group">
-                        <label className="filter-label">⏱️ Experience Range</label>
-                        <div className="range-labels">
-                            <span>{filters.minExperience} yrs</span>
-                            <span>{filters.maxExperience}+ yrs</span>
-                        </div>
-                        <div className="range-row">
-                            <input type="range" min="0" max="20" className="range-input"
-                                value={filters.minExperience}
-                                onChange={e => setFilters(f => ({ ...f, minExperience: +e.target.value }))} />
-                            <input type="range" min="0" max="30" className="range-input"
-                                value={filters.maxExperience}
-                                onChange={e => setFilters(f => ({ ...f, maxExperience: +e.target.value }))} />
-                        </div>
-                    </div>
-
-                    {/* Commitment */}
-                    <div className="filter-group">
-                        <label className="filter-label">🕐 Commitment</label>
-                        <div className="toggle-group">
-                            {['', 'Full-time', 'Part-time'].map(c => (
-                                <button key={c}
-                                    className={`toggle-btn ${filters.commitment === c ? 'active' : ''}`}
-                                    onClick={() => setFilters(f => ({ ...f, commitment: c }))}>
-                                    {c || 'All'}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Role */}
-                    <div className="filter-group">
-                        <label className="filter-label">👤 Role</label>
-                        <select className="filter-input" value={filters.role}
-                            onChange={e => setFilters(f => ({ ...f, role: e.target.value }))}>
-                            <option value="">All Roles</option>
-                            <option>Tech</option><option>Business</option>
-                            <option>Design</option><option>Operations</option><option>Other</option>
-                        </select>
-                    </div>
-
-                    {/* Startup Stage */}
-                    <div className="filter-group">
-                        <label className="filter-label">🚀 Startup Stage</label>
-                        <select className="filter-input" value={filters.startupStage}
-                            onChange={e => setFilters(f => ({ ...f, startupStage: e.target.value }))}>
-                            <option value="">All Stages</option>
-                            <option>Idea</option><option>MVP</option>
-                            <option>Early Revenue</option><option>Growth</option><option>Scale</option>
-                        </select>
-                    </div>
-
-                    {/* Skills */}
-                    <div className="filter-group">
-                        <label className="filter-label">⚡ Skills</label>
-                        <div className="chip-grid">
-                            {skillOptions.map(skill => (
-                                <button key={skill}
-                                    className={`chip ${filters.skills.includes(skill) ? 'active' : ''}`}
-                                    onClick={() => toggleItem('skills', skill)}>
-                                    {skill}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Industries */}
-                    <div className="filter-group">
-                        <label className="filter-label">🏭 Domain</label>
-                        <div className="chip-grid">
-                            {industryOptions.map(ind => (
-                                <button key={ind}
-                                    className={`chip ${filters.industries.includes(ind) ? 'active' : ''}`}
-                                    onClick={() => toggleItem('industries', ind)}>
-                                    {ind}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Save filters */}
-                    <motion.button
-                        className="save-filters-btn"
-                        onClick={() => setSavedFilters(true)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.97 }}
-                    >
-                        {savedFilters ? '✓ Filters Saved' : '💾 Save Filters'}
-                    </motion.button>
                 </aside>
 
-                {/* Results Panel */}
-                <main className="results-panel">
-                    <div className="results-header">
-                        <h3 className="results-count">
-                            {filteredFounders.length} founders found
-                        </h3>
-                        <div className="active-filters">
-                            {filters.commitment && <SkillBadge label={filters.commitment} variant="domain" />}
-                            {filters.role && <SkillBadge label={filters.role} variant="skill" />}
-                            {filters.skills.map(s => <SkillBadge key={s} label={s} variant="skill" />)}
-                            {filters.industries.map(i => <SkillBadge key={i} label={i} variant="domain" />)}
+                {/* Right Content: Top Bar + Grid */}
+                <main className="fp-main">
+                    {/* Top Bar: Saved Searches */}
+                    <div className="fp-card fp-top-bar">
+                        <div className="fp-saved-searches">
+                            <p className="fp-section-title" style={{ marginBottom: 0 }}>
+                                <BookmarkIcon fontSize="inherit" /> Saved Contexts
+                            </p>
+                            {savedSearches.map(s => (
+                                <button
+                                    key={s.id}
+                                    className={`saved-search-chip ${activeSearchId === s.id ? 'active' : ''}`}
+                                    onClick={() => setActiveSearchId(s.id)}
+                                >
+                                    {s.icon} {s.name}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="fp-top-actions">
+                            <button className="chip" onClick={resetFilters}>Clear All</button>
                         </div>
                     </div>
 
-                    {/* Recommended section */}
-                    <div className="section-label-text">⭐ Recommended for You</div>
-                    <div className="results-grid">
-                        {filteredFounders.length > 0 ? (
-                            filteredFounders.map((founder, i) => (
-                                <motion.div
-                                    key={founder.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.08 }}
-                                >
-                                    <FounderCard founder={founder} isTop={false} />
-                                </motion.div>
-                            ))
-                        ) : (
-                            <div className="no-results">
-                                <div className="no-results-icon">🔍</div>
-                                <h3>No matches found</h3>
-                                <p>Try adjusting your filters to see more founders.</p>
+                    {/* Results Section */}
+                    <section className="fp-results">
+                        <div className="results-header">
+                            <h3 className="results-count">
+                                {filteredFounders.length} Potential Partners Found
+                            </h3>
+                            <div className="active-filters">
+                                {filters.role && <div className="chip active">{filters.role}</div>}
+                                {filters.minExp > 0 && <div className="chip active">{filters.minExp}y+ Exp</div>}
                             </div>
-                        )}
-                    </div>
+                        </div>
+
+                        <div className="fp-grid">
+                            <AnimatePresence mode="popLayout">
+                                {filteredFounders.length > 0 ? (
+                                    filteredFounders.map((founder, idx) => (
+                                        <motion.div
+                                            key={founder.id}
+                                            layout
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            transition={{ duration: 0.3, delay: idx * 0.05 }}
+                                            style={{ position: 'relative', height: '540px' }}
+                                        >
+                                            <FounderCard founder={founder} isTop={false} />
+                                        </motion.div>
+                                    ))
+                                ) : (
+                                    <div className="no-results">
+                                        <div className="no-results-icon"><SearchOffIcon fontSize="inherit" /></div>
+                                        <h3>No Talent Matched</h3>
+                                        <p>Loosen your filters to discover more founders matching your vision.</p>
+                                    </div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </section>
+
+                    {/* Recommendations Section */}
+                    <section className="fp-recommendations">
+                        <h3 className="fp-section-title" style={{ fontSize: '1rem', color: 'white', marginBottom: '2rem' }}>
+                            <AutoFixHighIcon sx={{ color: 'var(--secondary)' }} /> Hyper-Relevant Recommendations
+                        </h3>
+                        <div className="fp-grid">
+                            {recommendations.map(founder => (
+                                <div key={`rec-${founder.id}`} style={{ position: 'relative', height: '540px' }}>
+                                    <FounderCard founder={founder} isTop={false} />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 </main>
             </div>
         </div>

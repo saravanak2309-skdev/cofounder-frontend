@@ -1,7 +1,10 @@
-import { useState } from 'react';
 import { motion, useMotionValue, useTransform, type PanInfo } from 'framer-motion';
+import SchoolIcon from '@mui/icons-material/School';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import type { Founder } from '../../types';
-import SkillBadge from '../SkillBadge/SkillBadge';
 import './FounderCard.css';
 
 interface FounderCardProps {
@@ -12,152 +15,121 @@ interface FounderCardProps {
     style?: React.CSSProperties;
 }
 
-const avatarColors: Record<string, string> = {
-    Tech: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    Business: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    Design: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    Operations: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    Other: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-};
-
 const FounderCard = ({ founder, onSwipeLeft, onSwipeRight, isTop = false, style }: FounderCardProps) => {
-    const [expanded, setExpanded] = useState(false);
-    const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 
     const x = useMotionValue(0);
-    const rotate = useTransform(x, [-200, 200], [-20, 20]);
-    const likeOpacity = useTransform(x, [0, 100], [0, 1]);
-    const nopeOpacity = useTransform(x, [-100, 0], [1, 0]);
+    const rotate = useTransform(x, [-200, 200], [-15, 15]);
+    const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
-    const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    // Smooth indicators for swipe intent
+    const passOpacity = useTransform(x, [-60, -20], [1, 0]);
+    const connectOpacity = useTransform(x, [20, 60], [0, 1]);
+
+    const handleDragEnd = (_: any, info: PanInfo) => {
         if (info.offset.x > 100) {
-            setSwipeDirection('right');
-            setTimeout(() => onSwipeRight?.(), 300);
+            setTimeout(() => onSwipeRight?.(), 200);
         } else if (info.offset.x < -100) {
-            setSwipeDirection('left');
-            setTimeout(() => onSwipeLeft?.(), 300);
+            setTimeout(() => onSwipeLeft?.(), 200);
+        } else {
         }
     };
 
-    const handleDrag = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        if (info.offset.x > 30) setSwipeDirection('right');
-        else if (info.offset.x < -30) setSwipeDirection('left');
-        else setSwipeDirection(null);
-    };
-
-    const initials = founder.name.split(' ').map(n => n[0]).join('').toUpperCase();
-    const avatarBg = avatarColors[founder.role] || avatarColors.Other;
-
     return (
         <motion.div
-            className={`founder-card ${isTop ? 'top' : ''} ${swipeDirection ? `swipe-${swipeDirection}` : ''}`}
-            style={{ x, rotate, ...style }}
+            className={`fc-container ${isTop ? 'is-top' : 'is-under'}`}
+            style={{ x, rotate, opacity, ...style }}
             drag={isTop ? 'x' : false}
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
-            onDrag={handleDrag}
-            animate={swipeDirection ? { x: swipeDirection === 'right' ? 500 : -500, opacity: 0 } : {}}
-            transition={{ duration: 0.3 }}
-            whileHover={isTop ? { scale: 1.01 } : {}}
+            whileHover={isTop ? { y: -5 } : {}}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
-            {/* Swipe Indicators */}
+            {/* Visual Feedback Overlays */}
             {isTop && (
                 <>
-                    <motion.div className="swipe-indicator like-indicator" style={{ opacity: likeOpacity }}>
-                        <span>CONNECT</span>
-                        <span className="indicator-icon">🤝</span>
-                    </motion.div>
-                    <motion.div className="swipe-indicator nope-indicator" style={{ opacity: nopeOpacity }}>
-                        <span className="indicator-icon">✕</span>
+                    <motion.div className="fc-overlay fc-overlay-pass" style={{ opacity: passOpacity }}>
                         <span>PASS</span>
+                    </motion.div>
+                    <motion.div className="fc-overlay fc-overlay-connect" style={{ opacity: connectOpacity }}>
+                        <span>CONNECT</span>
                     </motion.div>
                 </>
             )}
 
-            {/* Card Header */}
-            <div className="card-header">
-                <div className="card-avatar" style={{ background: avatarBg }}>
-                    {founder.photoUrl ? (
-                        <img src={founder.photoUrl} alt={founder.name} />
-                    ) : (
-                        <span className="avatar-initials">{initials}</span>
+            {/* Profile Photo Section */}
+            <div className="fc-photo-wrapper">
+                <img
+                    src={founder.photoUrl || `https://i.pravatar.cc/400?u=${founder.id}`}
+                    alt={founder.name}
+                    className="fc-photo"
+                />
+                <div className="fc-photo-overlay" />
+
+                {/* Floating Badges */}
+                <div className="fc-badges">
+                    <div className="fc-badge fc-badge-role">
+                        {founder.role}
+                    </div>
+                    {founder.yearsOfExperience >= 5 && (
+                        <div className="fc-badge fc-badge-pro">
+                            <VerifiedIcon style={{ fontSize: '1rem' }} /> PRO
+                        </div>
                     )}
-                </div>
-                <div className="card-identity">
-                    <div className="card-name-row">
-                        <h2 className="card-name">{founder.name}</h2>
-                        {founder.age && <span className="card-age">{founder.age}</span>}
-                    </div>
-                    <div className="card-role-badge">
-                        <span className="role-dot" style={{ background: avatarBg }}></span>
-                        {founder.role} Founder
-                    </div>
-                    <p className="card-location">📍 {founder.location}</p>
                 </div>
             </div>
 
-            {/* Card Body */}
-            <div className="card-body">
-                <div className="card-info-row">
-                    <div className="info-item">
-                        <span className="info-icon">🎓</span>
-                        <span className="info-text">{founder.education}</span>
+            {/* Content Section */}
+            <div className="fc-content">
+                <header className="fc-header">
+                    <div className="fc-title-row">
+                        <h2 className="fc-name">{founder.name}</h2>
+                        <span className="fc-match-pct">98% Match</span>
                     </div>
-                    <div className="info-item">
-                        <span className="info-icon">⏱️</span>
-                        <span className="info-text">{founder.yearsOfExperience} yrs exp</span>
+                    <div className="fc-meta-row">
+                        <span className="fc-meta-item">
+                            <LocationOnIcon fontSize="inherit" /> {founder.location}
+                        </span>
+                        <span className="fc-meta-dot">•</span>
+                        <span className="fc-meta-item">
+                            <AccessTimeIcon fontSize="inherit" /> {founder.yearsOfExperience}y Exp
+                        </span>
+                    </div>
+                </header>
+
+                <div className="fc-details-grid">
+                    <div className="fc-detail">
+                        <SchoolIcon className="fc-detail-icon" />
+                        <div className="fc-detail-text">
+                            <p className="fc-detail-label">Background</p>
+                            <p className="fc-detail-val">{founder.education}</p>
+                        </div>
+                    </div>
+                    <div className="fc-detail">
+                        <BusinessCenterIcon className="fc-detail-icon" />
+                        <div className="fc-detail-text">
+                            <p className="fc-detail-label">Industry</p>
+                            <p className="fc-detail-val">{founder.industries[0]}</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="card-section">
-                    <p className="section-label">Domain Expertise</p>
-                    <div className="tag-row">
-                        {founder.industries.map((ind) => (
-                            <SkillBadge key={ind} label={ind} variant="domain" />
+                <div className="fc-tags-section">
+                    <div className="fc-tag-group">
+                        {founder.skills.slice(0, 3).map(skill => (
+                            <span key={skill} className="fc-tag fc-tag-skill">{skill}</span>
                         ))}
                     </div>
                 </div>
 
-                <div className="card-section">
-                    <p className="section-label">Skills</p>
-                    <div className="tag-row">
-                        {founder.skills.slice(0, 4).map((skill) => (
-                            <SkillBadge key={skill} label={skill} variant="skill" />
-                        ))}
-                        {founder.skills.length > 4 && (
-                            <SkillBadge label={`+${founder.skills.length - 4}`} variant="more" />
-                        )}
-                    </div>
-                </div>
-
-                <div className="card-section">
-                    <p className="section-label">Looking For</p>
-                    <div className="tag-row">
-                        {founder.lookingFor.map((role) => (
-                            <SkillBadge key={role} label={role} variant="looking" />
-                        ))}
-                        <SkillBadge label={founder.commitment} variant="domain" />
-                    </div>
-                </div>
-
-                <div className="card-bio">
-                    <p className={`bio-text ${!expanded ? 'truncated' : ''}`}>
-                        {founder.bio}
+                <div className="fc-bio-section">
+                    <p className="fc-bio-text">
+                        {founder.bio.length > 120 ? `${founder.bio.substring(0, 120)}...` : founder.bio}
                     </p>
-                    {founder.bio.length > 120 && (
-                        <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
-                            {expanded ? 'Show less' : 'Read more'}
-                        </button>
-                    )}
                 </div>
-
-                {founder.startupVision && (
-                    <div className="card-vision">
-                        <span className="vision-icon">💡</span>
-                        <p className="vision-text">{founder.startupVision}</p>
-                    </div>
-                )}
             </div>
+
+            {/* Bottom Glow Decoration */}
+            <div className="fc-bottom-glow" />
         </motion.div>
     );
 };

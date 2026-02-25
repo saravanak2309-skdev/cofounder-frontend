@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import CloseIcon from '@mui/icons-material/Close';
+import BoltIcon from '@mui/icons-material/Bolt';
 import './SwipeControls.css';
 
 interface SwipeControlsProps {
@@ -8,27 +10,28 @@ interface SwipeControlsProps {
 
 const SwipeControls = ({ onPass, onConnect }: SwipeControlsProps) => {
     return (
-        <div className="swipe-controls">
+        <div className="sc-container">
             <motion.button
-                className="control-btn pass-btn"
+                className="sc-btn sc-btn-pass"
                 onClick={onPass}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.94 }}
-                title="Pass"
+                whileHover={{ scale: 1.1, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Pass"
             >
-                <span className="btn-icon">✕</span>
-                <span className="btn-label">Pass</span>
+                <div className="sc-icon-glow" />
+                <CloseIcon />
             </motion.button>
 
             <motion.button
-                className="control-btn connect-btn"
+                className="sc-btn sc-btn-connect"
                 onClick={onConnect}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.94 }}
-                title="Connect"
+                whileHover={{ scale: 1.15, y: -4 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Connect"
             >
-                <span className="btn-icon">🤝</span>
-                <span className="btn-label">Connect</span>
+                <div className="sc-icon-glow" />
+                <BoltIcon fontSize="large" />
+                <span className="sc-btn-label">CONNECT</span>
             </motion.button>
         </div>
     );

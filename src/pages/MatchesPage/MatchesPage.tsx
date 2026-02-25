@@ -1,41 +1,68 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import SearchIcon from '@mui/icons-material/Search';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import SendIcon from '@mui/icons-material/Send';
+import CelebrationIcon from '@mui/icons-material/Celebration';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { mockMatches } from '../../data/mockMatches';
 import { mockFounders } from '../../data/mockFounders';
-import SkillBadge from '../../components/SkillBadge/SkillBadge';
 import './MatchesPage.css';
 
-const quickIntros = [
-    '👋 Hey! Loved your profile. Can we chat?',
-    '🚀 Your vision aligns with mine perfectly!',
-    '☕ Would love a quick call to explore synergies.',
-    '💡 I have some ideas I\'d love to share with you.',
+const quickPrompts = [
+    "🚀 Would love to dive deeper into your vision!",
+    "🛠️ What's your current tech stack preference?",
+    "☕ Open for a quick 15-min sync this week?",
+    "💡 I have a few GTM ideas for your concept."
 ];
 
 const MatchesPage = () => {
-    const [activeMatchId, setActiveMatchId] = useState<string | null>(mockMatches[0]?.id);
+    const [activeMatchId, setActiveMatchId] = useState<string | null>(mockMatches[0]?.id || null);
     const [messageInput, setMessageInput] = useState('');
-    const [localMessages, setLocalMessages] = useState(mockMatches);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [messages, setMessages] = useState(mockMatches);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    const activeMatch = localMessages.find(m => m.id === activeMatchId);
-    const activeFounder = activeMatch ? mockFounders.find(f => f.id === activeMatch.founderId) : null;
+    // Auto-scroll to bottom of chat
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [activeMatchId, messages]);
 
-    const sendMessage = (text: string) => {
+    const activeMatch = useMemo(() =>
+        messages.find(m => m.id === activeMatchId),
+        [activeMatchId, messages]);
+
+    const activeFounder = useMemo(() =>
+        activeMatch ? mockFounders.find(f => f.id === activeMatch.founderId) : null,
+        [activeMatch]);
+
+    const filteredMatches = useMemo(() => {
+        return messages.filter(m => {
+            const founder = mockFounders.find(f => f.id === m.founderId);
+            return founder?.name.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+    }, [messages, searchQuery]);
+
+    const handleSendMessage = (text: string) => {
         if (!text.trim() || !activeMatchId) return;
-        setLocalMessages(prev => prev.map(m => {
-            if (m.id !== activeMatchId) return m;
-            return {
-                ...m,
-                messages: [...m.messages, {
-                    id: Date.now().toString(),
-                    senderId: 'current',
-                    receiverId: m.founderId,
-                    text: text.trim(),
-                    timestamp: new Date().toISOString(),
-                    read: true,
-                }],
-            };
-        }));
+
+        const newMessage = {
+            id: Date.now().toString(),
+            senderId: 'current',
+            receiverId: activeMatch?.founderId || '',
+            text: text.trim(),
+            timestamp: new Date().toISOString(),
+            read: true
+        };
+
+        setMessages(prev => prev.map(m =>
+            m.id === activeMatchId
+                ? { ...m, messages: [...m.messages, newMessage] }
+                : m
+        ));
         setMessageInput('');
     };
 
@@ -44,139 +71,144 @@ const MatchesPage = () => {
         return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    const initials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase();
+    const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase();
 
     return (
         <div className="matches-page">
-            {/* Left panel - Match list */}
+            <div className="mp-glow mp-glow-1" />
+            <div className="mp-glow mp-glow-2" />
+
+            {/* Sidebar - Match Discovery List */}
             <aside className="matches-list">
-                <div className="matches-list-header">
-                    <h2 className="matches-list-title">💬 Matches</h2>
-                    <span className="matches-badge">{mockMatches.length}</span>
+                <div className="ml-header">
+                    <div className="ml-title-row">
+                        <h2><ChatBubbleOutlineIcon sx={{ color: 'var(--primary)' }} /> Messages</h2>
+                    </div>
+                    <div className="ml-search">
+                        <SearchIcon className="ml-search-icon" fontSize="small" />
+                        <input
+                            placeholder="Search partners..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
-                {mockMatches.map(match => {
-                    const founder = mockFounders.find(f => f.id === match.founderId);
-                    if (!founder) return null;
-                    const lastMsg = match.messages[match.messages.length - 1];
-                    const unreadCount = match.messages.filter(m => m.senderId !== 'current' && !m.read).length;
-                    return (
-                        <motion.button
-                            key={match.id}
-                            className={`match-item ${activeMatchId === match.id ? 'active' : ''}`}
-                            onClick={() => setActiveMatchId(match.id)}
-                            whileHover={{ x: 3 }}
-                        >
-                            <div className="match-avatar">
-                                {initials(founder.name)}
-                            </div>
-                            <div className="match-info">
-                                <div className="match-name-row">
-                                    <span className="match-name">{founder.name}</span>
-                                    {lastMsg && <span className="match-time">{formatTime(lastMsg.timestamp)}</span>}
+
+                <div className="ml-items">
+                    {filteredMatches.map(match => {
+                        const founder = mockFounders.find(f => f.id === match.founderId);
+                        if (!founder) return null;
+
+                        const lastMsg = match.messages[match.messages.length - 1];
+                        const unreadCount = match.messages.filter(m => m.senderId !== 'current' && !m.read).length;
+                        const isActive = activeMatchId === match.id;
+
+                        return (
+                            <motion.button
+                                key={match.id}
+                                className={`ml-item ${isActive ? 'active' : ''}`}
+                                onClick={() => setActiveMatchId(match.id)}
+                                whileHover={{ x: 4 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <div className="ml-avatar-wrap">
+                                    <div className="ml-avatar">{getInitials(founder.name)}</div>
+                                    <div className="ml-status" />
                                 </div>
-                                <div className="match-skills">
-                                    {founder.skills.slice(0, 2).map(s => (
-                                        <SkillBadge key={s} label={s} variant="skill" />
-                                    ))}
+                                <div className="ml-info">
+                                    <div className="ml-name-row">
+                                        <span className="ml-name">{founder.name}</span>
+                                        {lastMsg && <span className="ml-time">{formatTime(lastMsg.timestamp)}</span>}
+                                    </div>
+                                    <p className="ml-preview">{lastMsg?.text || "No messages yet"}</p>
                                 </div>
-                                {lastMsg && (
-                                    <p className="match-preview">{lastMsg.text.slice(0, 50)}...</p>
-                                )}
-                            </div>
-                            {unreadCount > 0 && (
-                                <div className="unread-badge">{unreadCount}</div>
-                            )}
-                            <div className={`active-indicator ${founder.lastActive?.includes('hour') || founder.lastActive === 'Now' ? 'online' : ''}`} title={`Last active: ${founder.lastActive}`} />
-                        </motion.button>
-                    );
-                })}
+                                {unreadCount > 0 && <div className="ml-unread">{unreadCount}</div>}
+                            </motion.button>
+                        );
+                    })}
+                </div>
             </aside>
 
-            {/* Right panel - Chat */}
+            {/* Main Chat Interface */}
             <main className="chat-panel">
                 {activeMatch && activeFounder ? (
                     <>
-                        {/* Chat Header */}
-                        <div className="chat-header">
-                            <div className="chat-avatar">{initials(activeFounder.name)}</div>
-                            <div className="chat-founder-info">
-                                <h3 className="chat-founder-name">{activeFounder.name}</h3>
-                                <p className="chat-founder-meta">{activeFounder.role} • {activeFounder.location}</p>
+                        <header className="cp-header">
+                            <div className="cp-avatar">{getInitials(activeFounder.name)}</div>
+                            <div className="cp-info">
+                                <h3 className="cp-name">{activeFounder.name}</h3>
+                                <p className="cp-status">Active {activeFounder.lastActive || "Recently"}</p>
                             </div>
-                            <div className="chat-actions">
-                                <motion.button className="chat-action-btn" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                                    title="Schedule a Call">
-                                    📅 Schedule a Call
-                                </motion.button>
-                                <motion.button className="chat-action-btn share-btn" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                                    title="Share Profile">
-                                    🔗
-                                </motion.button>
+                            <div className="cp-actions">
+                                <button className="btn-schedule">
+                                    <CalendarMonthIcon fontSize="small" /> Schedule Sync
+                                </button>
+                                <button className="ml-search-icon" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                                    <MoreVertIcon sx={{ color: 'var(--text-muted)' }} />
+                                </button>
                             </div>
-                        </div>
+                        </header>
 
-                        {/* Messages */}
-                        <div className="messages-area">
-                            <div className="match-banner">
-                                <span className="match-banner-icon">🎉</span>
-                                <div>
-                                    <p className="match-banner-title">You matched with {activeFounder.name}!</p>
-                                    <p className="match-banner-date">Matched on {new Date(activeMatch.matchedAt).toLocaleDateString()}</p>
-                                </div>
+                        <div className="cp-messages" ref={scrollRef}>
+                            <div className="match-anniversary">
+                                <div className="ma-icon"><CelebrationIcon /></div>
+                                <p className="ma-text">Partnership Discovered • {new Date(activeMatch.matchedAt).toLocaleDateString()}</p>
                             </div>
 
-                            <AnimatePresence>
-                                {activeMatch.messages.map((msg) => (
+                            <AnimatePresence initial={false}>
+                                {activeMatch.messages.map(msg => (
                                     <motion.div
                                         key={msg.id}
-                                        className={`message ${msg.senderId === 'current' ? 'sent' : 'received'}`}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
+                                        className={`msg-wrapper ${msg.senderId === 'current' ? 'msg-sent' : 'msg-received'}`}
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
                                         transition={{ duration: 0.2 }}
                                     >
-                                        <div className="message-bubble">
-                                            <p className="message-text">{msg.text}</p>
+                                        <div className="msg-bubble">
+                                            {msg.text}
                                         </div>
-                                        <span className="message-time">{formatTime(msg.timestamp)}</span>
+                                        <span className="msg-time">{formatTime(msg.timestamp)}</span>
                                     </motion.div>
                                 ))}
                             </AnimatePresence>
                         </div>
 
-                        {/* Quick Intros */}
-                        <div className="quick-intros">
-                            {quickIntros.map((intro, i) => (
-                                <button key={i} className="quick-intro-btn" onClick={() => sendMessage(intro)}>
-                                    {intro}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Input */}
-                        <div className="chat-input-area">
-                            <input
-                                className="chat-input"
-                                placeholder="Write a message..."
-                                value={messageInput}
-                                onChange={e => setMessageInput(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && sendMessage(messageInput)}
-                            />
-                            <motion.button
-                                className="send-btn"
-                                onClick={() => sendMessage(messageInput)}
-                                disabled={!messageInput.trim()}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                ➤
-                            </motion.button>
-                        </div>
+                        <footer className="cp-footer">
+                            <div className="cp-prompts">
+                                {quickPrompts.map(prompt => (
+                                    <button
+                                        key={prompt}
+                                        className="cp-prompt"
+                                        onClick={() => handleSendMessage(prompt)}
+                                    >
+                                        {prompt}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="cp-input-wrap">
+                                <input
+                                    placeholder="Type your strategic proposal..."
+                                    value={messageInput}
+                                    onChange={e => setMessageInput(e.target.value)}
+                                    onKeyDown={e => e.key === 'Enter' && handleSendMessage(messageInput)}
+                                />
+                                <motion.button
+                                    className="cp-send-btn"
+                                    onClick={() => handleSendMessage(messageInput)}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    disabled={!messageInput.trim()}
+                                >
+                                    <SendIcon fontSize="small" />
+                                </motion.button>
+                            </div>
+                        </footer>
                     </>
                 ) : (
-                    <div className="no-chat-selected">
-                        <div className="no-chat-icon">💬</div>
-                        <h3>Select a match to start chatting</h3>
-                        <p>Your matched cofounders appear on the left.</p>
+                    <div className="no-selection">
+                        <ChatBubbleOutlineIcon className="no-selection-icon" />
+                        <h3>Your Strategic Hub</h3>
+                        <p>Select a match to discuss your next billion-dollar venture.</p>
                     </div>
                 )}
             </main>

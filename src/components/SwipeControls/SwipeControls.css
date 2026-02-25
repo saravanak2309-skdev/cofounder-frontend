@@ -1,56 +1,82 @@
-.swipe-controls {
+.sc-container {
     display: flex;
-    gap: 1.5rem;
-    justify-content: center;
     align-items: center;
+    gap: 2rem;
     padding: 1rem;
 }
 
-.control-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 1.1rem 2rem;
-    border-radius: 20px;
+.sc-btn {
+    position: relative;
     border: none;
+    outline: none;
     cursor: pointer;
-    font-weight: 700;
-    font-family: inherit;
-    transition: all 0.2s ease;
-    min-width: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.pass-btn {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
-    border: 2px solid rgba(239, 68, 68, 0.3);
+.sc-btn-pass {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 77, 77, 0.1);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    border-radius: 50%;
+    color: #ff4d4d;
 }
 
-.pass-btn:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.6);
-    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.2);
+.sc-btn-pass:hover {
+    background: rgba(255, 77, 77, 0.15);
+    border-color: #ff4d4d;
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.2);
 }
 
-.connect-btn {
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
-    border: 2px solid rgba(16, 185, 129, 0.3);
+.sc-btn-connect {
+    height: 72px;
+    padding: 0 2.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 100px;
+    color: white;
+    gap: 0.75rem;
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
 }
 
-.connect-btn:hover {
-    background: rgba(16, 185, 129, 0.2);
-    border-color: rgba(16, 185, 129, 0.6);
-    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
+.sc-btn-connect:hover {
+    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.5);
+    transform: translateY(-2px);
 }
 
-.btn-icon {
-    font-size: 1.5rem;
+.sc-btn-label {
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
 }
 
-.btn-label {
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+.sc-icon-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    filter: blur(15px);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s;
+}
+
+.sc-btn:hover .sc-icon-glow {
+    opacity: 0.5;
+}
+
+@media (max-width: 480px) {
+    .sc-container {
+        gap: 1.5rem;
+    }
+
+    .sc-btn-connect {
+        padding: 0 1.5rem;
+    }
+
+    .sc-btn-label {
+        display: none;
+    }
 }

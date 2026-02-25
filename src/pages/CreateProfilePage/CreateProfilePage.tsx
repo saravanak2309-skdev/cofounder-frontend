@@ -1,7 +1,16 @@
-import { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import SkillBadge from '../../components/SkillBadge/SkillBadge';
+import { motion, AnimatePresence } from 'framer-motion';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import PersonIcon from '@mui/icons-material/Person';
+import WorkIcon from '@mui/icons-material/Work';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CloseIcon from '@mui/icons-material/Close';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import './CreateProfilePage.css';
 
 const industries = [
@@ -10,15 +19,25 @@ const industries = [
     'PropTech', 'LegalTech', 'Gaming', 'Media', 'Other',
 ];
 
+const roles = [
+    { id: 'tech', label: 'Tech Founder', desc: 'Engineering & Product', icon: <PsychologyIcon /> },
+    { id: 'business', label: 'Business Founder', desc: 'Strategy & Growth', icon: <WorkIcon /> },
+    { id: 'design', label: 'Design Founder', desc: 'UX & Creative', icon: <VisibilityIcon /> },
+    { id: 'ops', label: 'Ops Founder', desc: 'Execution & People', icon: <PersonIcon /> },
+];
+
 const CreateProfilePage = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [skillInput, setSkillInput] = useState('');
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [form, setForm] = useState({
         name: '', age: '', location: '',
         education: '', yearsOfExperience: '', industry: '', skills: [] as string[],
         commitment: 'Full-time', preferredCofounder: '', startupVision: '',
-        bio: '', role: '',
+        bio: '', roleId: '',
     });
 
     const handleAddSkill = (e: React.KeyboardEvent) => {
@@ -35,227 +54,291 @@ const CreateProfilePage = () => {
         setForm(f => ({ ...f, skills: f.skills.filter(s => s !== skill) }));
     };
 
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPhotoPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const profile = { ...form, id: Date.now().toString() };
+        const profile = { ...form, id: Date.now().toString(), photoUrl: photoPreview };
         localStorage.setItem('userProfile', JSON.stringify(profile));
         navigate('/swipe');
     };
 
-    const stepTitles = ['Basic Details', 'Professional Background', 'Expectations', 'About You'];
+    const stepTitles = ['Identity', 'Expertise', 'Vision', 'Presence'];
     const totalSteps = 4;
 
+    const nextStep = () => {
+        if (step < totalSteps) setStep(step + 1);
+    };
+
+    const prevStep = () => {
+        if (step > 1) setStep(step - 1);
+    };
+
     return (
-        <div className="create-profile-page">
-            <div className="create-profile-container">
-                <div className="profile-header">
-                    <h1 className="profile-title">Build Your Founder Profile</h1>
-                    <p className="profile-subtitle">Help us find your perfect cofounder match</p>
+        <div className="cp-page">
+            <div className="cp-glow cp-glow-1" />
+            <div className="cp-glow cp-glow-2" />
 
-                    {/* Progress */}
-                    <div className="progress-bar-container">
-                        <div className="progress-steps">
-                            {stepTitles.map((title, i) => (
-                                <div key={i} className={`progress-step ${i + 1 === step ? 'active' : ''} ${i + 1 < step ? 'done' : ''}`}>
-                                    <div className="step-bubble">{i + 1 < step ? '✓' : i + 1}</div>
-                                    <span className="step-name">{title}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="progress-bar">
-                            <motion.div
-                                className="progress-fill"
-                                animate={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-                                transition={{ duration: 0.4 }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <form onSubmit={handleSubmit}>
+            <div className="cp-container">
+                <header className="cp-header">
                     <motion.div
-                        key={step}
-                        className="form-card"
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="cp-badge"
                     >
-                        <h2 className="form-step-title">{stepTitles[step - 1]}</h2>
+                        Step {step} of {totalSteps}
+                    </motion.div>
+                    <h1 className="cp-title">{stepTitles[step - 1]}</h1>
+                    <p className="cp-subtitle">Crafting your professional founder persona</p>
 
-                        {/* Step 1: Basic Details */}
-                        {step === 1 && (
-                            <div className="form-fields">
-                                <div className="form-group">
-                                    <label className="form-label">Full Name *</label>
-                                    <input className="form-input" placeholder="Your full name" value={form.name}
-                                        onChange={e => setForm({ ...form, name: e.target.value })} required />
-                                </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label className="form-label">Age (optional)</label>
-                                        <input className="form-input" type="number" min="18" max="99" placeholder="Your age"
-                                            value={form.age} onChange={e => setForm({ ...form, age: e.target.value })} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">I am a *</label>
-                                        <select className="form-input" value={form.role}
-                                            onChange={e => setForm({ ...form, role: e.target.value })} required>
-                                            <option value="">Select role</option>
-                                            <option>Tech</option><option>Business</option>
-                                            <option>Design</option><option>Operations</option><option>Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Location *</label>
-                                    <input className="form-input" placeholder="City, State / Country" value={form.location}
-                                        onChange={e => setForm({ ...form, location: e.target.value })} required />
-                                </div>
+                    {/* Stepper */}
+                    <div className="cp-stepper">
+                        {stepTitles.map((_, i) => (
+                            <div key={i} className={`cp-step-indicator ${i + 1 <= step ? 'active' : ''}`}>
+                                <div className="cp-step-dot" />
+                                {i < stepTitles.length - 1 && <div className="cp-step-line" />}
                             </div>
-                        )}
+                        ))}
+                    </div>
+                </header>
 
-                        {/* Step 2: Professional Background */}
-                        {step === 2 && (
-                            <div className="form-fields">
-                                <div className="form-group">
-                                    <label className="form-label">Education *</label>
-                                    <input className="form-input" placeholder="Institute – Degree, Field"
-                                        value={form.education} onChange={e => setForm({ ...form, education: e.target.value })} required />
-                                </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label className="form-label">Years of Experience *</label>
-                                        <input className="form-input" type="number" min="0" max="50" placeholder="Years"
-                                            value={form.yearsOfExperience} onChange={e => setForm({ ...form, yearsOfExperience: e.target.value })} required />
+                <form className="cp-form-wrapper" onSubmit={handleSubmit}>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={step}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.4, ease: "circOut" }}
+                            className="cp-card"
+                        >
+                            {/* Step 1: Basic Details & Role */}
+                            {step === 1 && (
+                                <div className="cp-section">
+                                    <div className="cp-input-group">
+                                        <label>What's your full name?</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Elon Tusk"
+                                            value={form.name}
+                                            onChange={e => setForm({ ...form, name: e.target.value })}
+                                            required
+                                        />
                                     </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Industry / Domain *</label>
-                                        <select className="form-input" value={form.industry}
-                                            onChange={e => setForm({ ...form, industry: e.target.value })} required>
-                                            <option value="">Select industry</option>
-                                            {industries.map(i => <option key={i}>{i}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Skills (press Enter to add)</label>
-                                    <input
-                                        className="form-input"
-                                        placeholder="e.g. React, Python, Growth Hacking..."
-                                        value={skillInput}
-                                        onChange={e => setSkillInput(e.target.value)}
-                                        onKeyDown={handleAddSkill}
-                                    />
-                                    {form.skills.length > 0 && (
-                                        <div className="skills-tags">
-                                            {form.skills.map(skill => (
-                                                <SkillBadge key={skill} label={skill} variant="skill" onRemove={() => removeSkill(skill)} />
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
 
-                        {/* Step 3: Expectations */}
-                        {step === 3 && (
-                            <div className="form-fields">
-                                <div className="form-group">
-                                    <label className="form-label">Commitment *</label>
-                                    <div className="toggle-group">
-                                        {['Full-time', 'Part-time'].map(c => (
-                                            <button
-                                                key={c}
-                                                type="button"
-                                                className={`toggle-btn ${form.commitment === c ? 'active' : ''}`}
-                                                onClick={() => setForm({ ...form, commitment: c })}
+                                    <div className="cp-role-grid">
+                                        {roles.map(r => (
+                                            <div
+                                                key={r.id}
+                                                className={`cp-role-card ${form.roleId === r.id ? 'active' : ''}`}
+                                                onClick={() => setForm({ ...form, roleId: r.id })}
                                             >
-                                                {c}
-                                            </button>
+                                                <div className="cp-role-icon">{r.icon}</div>
+                                                <div className="cp-role-info">
+                                                    <h4>{r.label}</h4>
+                                                    <p>{r.desc}</p>
+                                                </div>
+                                                {form.roleId === r.id && <CheckCircleIcon className="cp-check" />}
+                                            </div>
                                         ))}
                                     </div>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Preferred Cofounder Skillset *</label>
-                                    <select className="form-input" value={form.preferredCofounder}
-                                        onChange={e => setForm({ ...form, preferredCofounder: e.target.value })} required>
-                                        <option value="">Select skillset</option>
-                                        <option>Tech</option><option>Business</option>
-                                        <option>Design</option><option>Operations</option><option>Domain Expert</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Startup Vision / Theme *</label>
-                                    <textarea
-                                        className="form-input form-textarea"
-                                        rows={3}
-                                        placeholder="What problem do you want to solve? What's your startup about?"
-                                        value={form.startupVision}
-                                        onChange={e => setForm({ ...form, startupVision: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        )}
 
-                        {/* Step 4: About You */}
-                        {step === 4 && (
-                            <div className="form-fields">
-                                <div className="form-group">
-                                    <label className="form-label">Short Bio *</label>
-                                    <textarea
-                                        className="form-input form-textarea"
-                                        rows={5}
-                                        placeholder="Tell potential cofounders about yourself, your background, and what you bring to the table..."
-                                        value={form.bio}
-                                        onChange={e => setForm({ ...form, bio: e.target.value })}
-                                        required
-                                    />
-                                    <span className="char-count">{form.bio.length} / 500</span>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Profile Photo (optional)</label>
-                                    <div className="photo-upload">
-                                        <div className="photo-placeholder">
-                                            <span className="photo-icon">📷</span>
-                                            <span>Upload a photo</span>
-                                            <span className="photo-hint">JPG, PNG up to 5MB</span>
+                                    <div className="cp-input-row">
+                                        <div className="cp-input-group">
+                                            <label>Age</label>
+                                            <input
+                                                type="number"
+                                                placeholder="28"
+                                                value={form.age}
+                                                onChange={e => setForm({ ...form, age: e.target.value })}
+                                            />
                                         </div>
-                                        <input type="file" accept="image/*" className="photo-input" />
+                                        <div className="cp-input-group">
+                                            <label>Location</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Bangalore, IN"
+                                                value={form.location}
+                                                onChange={e => setForm({ ...form, location: e.target.value })}
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    </motion.div>
+                            )}
 
-                    {/* Navigation */}
-                    <div className="form-nav">
+                            {/* Step 2: Background */}
+                            {step === 2 && (
+                                <div className="cp-section">
+                                    <div className="cp-input-group">
+                                        <label>Education & Background</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Stanford MBA / Self-taught Developer"
+                                            value={form.education}
+                                            onChange={e => setForm({ ...form, education: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="cp-input-row">
+                                        <div className="cp-input-group">
+                                            <label>Exp (Years)</label>
+                                            <input
+                                                type="number"
+                                                placeholder="5"
+                                                value={form.yearsOfExperience}
+                                                onChange={e => setForm({ ...form, yearsOfExperience: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="cp-input-group">
+                                            <label>Primary Industry</label>
+                                            <select
+                                                value={form.industry}
+                                                onChange={e => setForm({ ...form, industry: e.target.value })}
+                                                required
+                                            >
+                                                <option value="">Select Domain</option>
+                                                {industries.map(i => <option key={i} value={i}>{i}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="cp-input-group">
+                                        <label>Top Skills (Enter to add)</label>
+                                        <div className="cp-tag-input-wrap">
+                                            <input
+                                                type="text"
+                                                placeholder="AI, GTM, React..."
+                                                value={skillInput}
+                                                onChange={e => setSkillInput(e.target.value)}
+                                                onKeyDown={handleAddSkill}
+                                            />
+                                            <div className="cp-tags">
+                                                {form.skills.map(s => (
+                                                    <span key={s} className="cp-tag">
+                                                        {s} <CloseIcon onClick={() => removeSkill(s)} className="cp-tag-close" />
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 3: Vision */}
+                            {step === 3 && (
+                                <div className="cp-section">
+                                    <div className="cp-input-group">
+                                        <label>What's the vision?</label>
+                                        <textarea
+                                            placeholder="Briefly describe the world you want to build or the problem you are obsessed with..."
+                                            value={form.startupVision}
+                                            onChange={e => setForm({ ...form, startupVision: e.target.value })}
+                                            rows={4}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="cp-input-group">
+                                        <label>Who are you looking for?</label>
+                                        <select
+                                            value={form.preferredCofounder}
+                                            onChange={e => setForm({ ...form, preferredCofounder: e.target.value })}
+                                            required
+                                        >
+                                            <option value="">Select partner core skill</option>
+                                            <option>Technology (CTO)</option>
+                                            <option>Business (CEO)</option>
+                                            <option>Product & Design (CPO)</option>
+                                            <option>Growth & Market</option>
+                                        </select>
+                                    </div>
+                                    <div className="cp-commitment-wrap">
+                                        <label>Commitment Level</label>
+                                        <div className="cp-toggle-group">
+                                            {['Full-time', 'Part-time'].map(c => (
+                                                <button
+                                                    key={c}
+                                                    type="button"
+                                                    className={form.commitment === c ? 'active' : ''}
+                                                    onClick={() => setForm({ ...form, commitment: c })}
+                                                >
+                                                    {c}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 4: Persona */}
+                            {step === 4 && (
+                                <div className="cp-section">
+                                    <div className="cp-photo-section">
+                                        <div
+                                            className="cp-photo-upload"
+                                            onClick={() => fileInputRef.current?.click()}
+                                        >
+                                            {photoPreview ? (
+                                                <img src={photoPreview} alt="Preview" className="cp-preview-img" />
+                                            ) : (
+                                                <div className="cp-upload-placeholder">
+                                                    <CloudUploadIcon />
+                                                    <span>Add Profile Photo</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handlePhotoChange}
+                                            style={{ display: 'none' }}
+                                            accept="image/*"
+                                        />
+                                    </div>
+
+                                    <div className="cp-input-group">
+                                        <label>The Founder's Bio</label>
+                                        <textarea
+                                            placeholder="Talk about your journey, your wins, and your quirks..."
+                                            value={form.bio}
+                                            onChange={e => setForm({ ...form, bio: e.target.value })}
+                                            rows={6}
+                                            required
+                                        />
+                                        <div className="cp-char-count">{form.bio.length}/500</div>
+                                    </div>
+                                </div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+
+                    <footer className="cp-footer">
                         {step > 1 && (
-                            <button type="button" className="nav-btn back-btn" onClick={() => setStep(s => s - 1)}>
-                                ← Back
+                            <button type="button" className="btn-ghost" onClick={prevStep}>
+                                <ArrowBackIcon fontSize="small" /> Back
                             </button>
                         )}
-                        {step < totalSteps ? (
-                            <motion.button
-                                type="button"
-                                className="nav-btn next-btn"
-                                onClick={() => setStep(s => s + 1)}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                Next →
-                            </motion.button>
-                        ) : (
-                            <motion.button
-                                type="submit"
-                                className="nav-btn submit-btn"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                🚀 Create Profile & Start Matching
-                            </motion.button>
-                        )}
-                    </div>
+                        <div style={{ marginLeft: 'auto' }}>
+                            {step < totalSteps ? (
+                                <button type="button" className="btn-primary" onClick={nextStep}>
+                                    Next Step <ArrowForwardIcon fontSize="small" />
+                                </button>
+                            ) : (
+                                <button type="submit" className="btn-primary btn-submit">
+                                    Launch Profile <RocketLaunchIcon fontSize="small" />
+                                </button>
+                            )}
+                        </div>
+                    </footer>
                 </form>
             </div>
         </div>

@@ -1,0 +1,58 @@
+# ── FOUNDER MATRIMONY - ADVANCED CONFIGURATION ──
+
+[app]
+title = "Founder Matrimony Core API"
+version = "1.0.0"
+environment = "development" # development | production | testing
+debug = true
+api_prefix = "/api/v1"
+
+[server]
+host = "0.0.0.0"
+port = 8000
+reload = true
+workers = 1
+
+[database]
+# MySQL Configuration (SQLAlchemy / PyMySQL)
+url = "mysql+pymysql://founder_user:secure_password@localhost:3306/founder_matrimony"
+pool_size = 20
+max_overflow = 10
+pool_pre_ping = true
+
+[security]
+# Generate via: openssl rand -hex 32
+secret_key = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+algorithm = "HS256"
+access_token_expire_minutes = 60
+refresh_token_expire_days = 7
+
+[cors]
+# List of origins allowed to access the API
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://founder-matrimony.app"
+]
+
+[email]
+# For match notifications and onboarding
+smtp_host = "smtp.mailtrap.io"
+smtp_port = 587
+smtp_user = "user_id"
+smtp_password = "password"
+emails_from_email = "no-reply@foundermatrimony.com"
+emails_from_name = "Founder Matrimony Support"
+
+[storage]
+# For profile photos (Local or S3)
+provider = "local" # local | s3
+upload_dir = "static/uploads"
+s3_bucket = "foundermatrimony-assets"
+s3_region = "us-east-1"
+
+[discovery]
+# Tuning matching algorithm constants
+min_match_score = 0.70
+max_daily_swipes = 100
+pro_features_enabled = true
