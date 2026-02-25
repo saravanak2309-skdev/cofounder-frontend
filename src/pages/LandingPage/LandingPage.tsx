@@ -64,7 +64,7 @@ const LandingPage = () => {
                         transition={{ duration: 0.6, delay: 0.1 }}
                     >
                         Find Your
-                        <span className="gradient-text"> Perfect Cofounder</span>
+                        <span className="gradient-text"> Perfect Cofoundersssss</span>
                     </motion.h1>
 
                     <motion.p
