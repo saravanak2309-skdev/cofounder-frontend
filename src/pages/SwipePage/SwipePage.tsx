@@ -6,7 +6,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { mockFounders } from '../../data/mockFounders';
 import FounderCard from '../../components/FounderCard/FounderCard';

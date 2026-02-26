@@ -4,7 +4,6 @@ import SchoolIcon from '@mui/icons-material/School';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import BoltIcon from '@mui/icons-material/Bolt';
-import WorkIcon from '@mui/icons-material/Work';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import type { Founder } from '../../types';
 import './FounderCard.css';

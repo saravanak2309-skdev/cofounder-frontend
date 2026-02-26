@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import TuneIcon from '@mui/icons-material/Tune';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import SchoolIcon from '@mui/icons-material/School';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import StarsIcon from '@mui/icons-material/Stars';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import VerifiedIcon from '@mui/icons-material/Verified';
 import { mockFounders } from '../../data/mockFounders';
 import FounderCard from '../../components/FounderCard/FounderCard';
 import './FiltersPage.css';

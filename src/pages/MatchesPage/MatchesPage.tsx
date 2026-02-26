@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { motion } from 'framer-motion';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
