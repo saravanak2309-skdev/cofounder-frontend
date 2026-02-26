@@ -8,7 +8,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import BoltIcon from '@mui/icons-material/Bolt';
 import WorkIcon from '@mui/icons-material/Work';
 import PsychologyIcon from '@mui/icons-material/Psychology';
-import FM_logo3 from '../../assets/FM_logo3.png';
+import FM_logo from '../../assets/FM_logo.png';
 import { mockFounders } from '../../data/mockFounders';
 import './MatchesPage.css';
 
@@ -31,7 +31,7 @@ const MatchesPage = () => {
                 {/* ── LEFT PANEL: DISCOVERY ALLIANCES ── */}
                 <aside className="alliances-sidebar">
                     <header className="sidebar-brand-header">
-                        <img src={FM_logo3} alt="FM" className="sidebar-logo" />
+                        <img src={FM_logo} alt="FM" className="sidebar-logo" />
                         <div className="brand-text">
                             <h2>Alliances</h2>
                             <p>Strategic Connections</p>

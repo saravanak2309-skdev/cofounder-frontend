@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import FM_logo3 from '../../assets/FM_logo3.png';
+import FM_logo from '../../assets/FM_logo.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
@@ -24,7 +24,7 @@ const Navbar = () => {
             <div className="nav-container">
                 {/* LOGO SECTION - Properly aligned and balanced */}
                 <Link to="/" className="nav-logo-group">
-                    <img src={FM_logo3} alt="Founder Matrimony" className="nav-logo-img" />
+                    <img src={FM_logo} alt="Founder Matrimony" className="nav-logo-img" />
                     <div className="nav-logo-text">
                         <span className="logo-top">FOUNDER</span>
                         <span className="logo-bottom">MATRIMONY</span>

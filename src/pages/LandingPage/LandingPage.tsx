@@ -12,7 +12,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import BoltIcon from '@mui/icons-material/Bolt';
-import FM_logo3 from '../../assets/FM_logo3.png';
+import FM_logo from '../../assets/FM_logo.png';
 import FounderCard from '../../components/FounderCard/FounderCard';
 import { mockFounders } from '../../data/mockFounders';
 import './LandingPage.css';
@@ -104,7 +104,7 @@ const LandingPage = () => {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 1, ease: "easeOut" }}
                         >
-                            <img src={FM_logo3} alt="Logo" className="hero-monogram animate-pulse-slight" />
+                            <img src={FM_logo} alt="Logo" className="hero-monogram animate-pulse-slight" />
                             <div className="hero-monogram-glow" />
                         </motion.div>
                     </div>
@@ -238,7 +238,7 @@ const LandingPage = () => {
             {/* ── FINAL CTA ── */}
             <section className="cta-section">
                 <div className="cta-card glass">
-                    <img src={FM_logo3} alt="Logo" className="cta-logo" />
+                    <img src={FM_logo} alt="Logo" className="cta-logo" />
                     <h2>Formalize your vision.</h2>
                     <p>Apply for entry into India's most exclusive cofounder ecosystem.</p>
                     <button className="btn-premium btn-premium-primary" onClick={() => navigate('/create-profile')}>
@@ -251,7 +251,7 @@ const LandingPage = () => {
             <footer className="landing-footer glass">
                 <div className="footer-content">
                     <div className="footer-brand">
-                        <img src={FM_logo3} alt="FM" className="footer-logo" />
+                        <img src={FM_logo} alt="FM" className="footer-logo" />
                         <div>
                             <h3>Founder Matrimony</h3>
                             <p>Premium Strategic Matching Architecture</p>

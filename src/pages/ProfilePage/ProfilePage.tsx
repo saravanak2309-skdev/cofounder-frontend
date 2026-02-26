@@ -11,7 +11,7 @@ import PsychologyIcon from '@mui/icons-material/Psychology';
 import SecurityIcon from '@mui/icons-material/Security';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import EditIcon from '@mui/icons-material/Edit';
-import FM_logo3 from '../../assets/FM_logo3.png';
+import FM_logo from '../../assets/FM_logo.png';
 import { mockCurrentUser } from '../../data/mockFounders';
 import './ProfilePage.css';
 
@@ -34,7 +34,7 @@ const ProfilePage = () => {
                 {/* ── LEFT NAVIGATION RAIL ── */}
                 <aside className="dashboard-rail glass">
                     <div className="rail-brand">
-                        <img src={FM_logo3} alt="FM" className="rail-logo" />
+                        <img src={FM_logo} alt="FM" className="rail-logo" />
                     </div>
 
                     <nav className="rail-nav">
