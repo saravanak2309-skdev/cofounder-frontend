@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from uuid import UUID
 from app.api import deps
 from app.db.session import get_db
-from app.models.models import User, Match, Message, Profile
+from app.models.models import User, Match, ChatMessage, Profile
 from app.schemas.schemas import MessageCreate, MessageResponse, ProfileResponse
 
 router = APIRouter()
@@ -28,7 +29,7 @@ def get_my_matches(
 
 @router.get("/{partner_id}/messages", response_model=List[MessageResponse])
 def get_chat_history(
-    partner_id: int,
+    partner_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_user)
 ):
@@ -40,12 +41,12 @@ def get_chat_history(
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
         
-    messages = db.query(Message).filter(Message.match_id == match.id).order_by(Message.created_at).all()
+    messages = db.query(ChatMessage).filter(ChatMessage.match_id == match.id).order_by(ChatMessage.created_at).all()
     return messages
 
 @router.post("/{partner_id}/messages", response_model=MessageResponse)
 def send_message(
-    partner_id: int,
+    partner_id: UUID,
     message_in: MessageCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_user)
@@ -58,7 +59,7 @@ def send_message(
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
         
-    new_message = Message(
+    new_message = ChatMessage(
         match_id=match.id,
         sender_id=current_user.id,
         content=message_in.content

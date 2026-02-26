@@ -1,322 +1,265 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import GroupIcon from '@mui/icons-material/Group';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SchoolIcon from '@mui/icons-material/School';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import TrackChangesIcon from '@mui/icons-material/TrackChanges';
-import FactoryIcon from '@mui/icons-material/Factory';
-import BoltIcon from '@mui/icons-material/Bolt';
 import PsychologyIcon from '@mui/icons-material/Psychology';
-import CreateIcon from '@mui/icons-material/Create';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import CelebrationIcon from '@mui/icons-material/Celebration';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import BoltIcon from '@mui/icons-material/Bolt';
+import FM_logo3 from '../../assets/FM_logo3.png';
+import FounderCard from '../../components/FounderCard/FounderCard';
 import { mockFounders } from '../../data/mockFounders';
 import './LandingPage.css';
-import SwipeHeroCard from '../../components/SwipeHeroCard/SwipeHeroCard';
-import FM_logo from '../../assets/FM_logo.png';
-
-const industries = [
-    'FinTech', 'EdTech', 'HealthTech', 'SaaS', 'E-Commerce',
-    'AgriTech', 'CleanTech', 'D2C', 'Logistics', 'AI/ML',
-    'PropTech', 'LegalTech', 'Gaming', 'Media', 'Other',
-];
 
 const criteriaItems = [
-    { icon: <LocationOnIcon fontSize="inherit" />, label: 'Location' },
-    { icon: <SchoolIcon fontSize="inherit" />, label: 'Education' },
-    { icon: <AccessTimeIcon fontSize="inherit" />, label: 'Experience' },
-    { icon: <TrackChangesIcon fontSize="inherit" />, label: 'Expectations' },
-    { icon: <FactoryIcon fontSize="inherit" />, label: 'Domain Expertise' },
-    { icon: <BoltIcon fontSize="inherit" />, label: 'Skills' },
-    { icon: <PsychologyIcon fontSize="inherit" />, label: 'Founder Mindset' },
+    { icon: <LocationOnIcon />, label: 'Location' },
+    { icon: <SchoolIcon />, label: 'Alma Mater' },
+    { icon: <AccessTimeIcon />, label: 'Tenure' },
+    { icon: <PsychologyIcon />, label: 'Mindset' },
+    { icon: <BusinessCenterIcon />, label: 'Domain' },
+    { icon: <BoltIcon />, label: 'Skills' },
 ];
 
 const steps = [
-    { step: '01', icon: <CreateIcon fontSize="inherit" />, title: 'Create Profile', desc: 'Build your founder profile highlighting your skills, vision, and what you bring to the table.' },
-    { step: '02', icon: <LocalFireDepartmentIcon fontSize="inherit" />, title: 'Swipe & Match', desc: "Discover potential cofounders. Swipe right to connect, left to pass. It's that simple." },
-    { step: '03', icon: <RocketLaunchIcon fontSize="inherit" />, title: 'Connect & Build', desc: 'Chat, schedule a call, and start building your dream startup together.' },
+    {
+        icon: <TravelExploreIcon />,
+        title: "Protocol Setup",
+        desc: "Define your founder DNA, expertise gaps, and startup vision through our verified framework."
+    },
+    {
+        icon: <GroupIcon />,
+        title: "Strategic Discovery",
+        desc: "Screen elite cofounders using high-precision filters and multi-dimensional compatibility scores."
+    },
+    {
+        icon: <RocketLaunchIcon />,
+        title: "Launch Alliance",
+        desc: "Formalize partnerships with pre-vetted legal support to start building at venture speed."
+    }
 ];
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const [form, setForm] = useState({
-        name: '',
-        contact: '',
-        role: '',
-        lookingFor: '',
-        industry: '',
-    });
-    const [submitted, setSubmitted] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitted(true);
-        // Simulate a premium transition
-        setTimeout(() => navigate('/swipe'), 1500);
-    };
+    // Vertical Carousel Simulator for Hero Profiles
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setActiveIndex(prev => (prev + 1) % mockFounders.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
 
     return (
-        <div className="landing">
-            {/* ── Hero Section ────────────────────────────────────────────────── */}
+        <div className="landing-page">
+            <div className="bg-glow bg-glow-1" />
+            <div className="bg-glow bg-glow-2" />
+
+            {/* ── 3-COLUMN PREMIUM HERO ── */}
             <section className="hero-section">
-                <div className="hero-glow hero-glow-1" />
-                <div className="hero-glow hero-glow-2" />
-
-                <div className="hero-inner">
-                    <motion.div
-                        className="hero-left"
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                    >
-                        <div className="hero-badge">
-                            <BoltIcon fontSize="small" className="hero-badge-icon" />
-                            <span>The Premium Network for Builders</span>
-                        </div>
-
-                        <h1 className="hero-title">
-                            Build the Future with your <br />
-                            <span className="hero-title-gradient">Strategic Partner</span>
-                        </h1>
-
-                        <p className="hero-subtitle">
-                            Match with elite cofounders based on shared vision,
-                            complementary skills, and verified domain expertise.
-                            The professional alternative to casual networking.
-                        </p>
-
-                        <div className="hero-stats">
-                            <div className="hero-stat">
-                                <span className="hero-stat-num">12k+</span>
-                                <span className="hero-stat-label">Founders</span>
-                            </div>
-                            <div className="hero-stat-divider" />
-                            <div className="hero-stat">
-                                <span className="hero-stat-num">450+</span>
-                                <span className="hero-stat-label">MVPs Built</span>
-                            </div>
-                            <div className="hero-stat-divider" />
-                            <div className="hero-stat">
-                                <span className="hero-stat-num">32</span>
-                                <span className="hero-stat-label">Exits</span>
-                            </div>
-                        </div>
-
-                        <div className="hero-cta-group">
-                            <button
-                                onClick={() => document.getElementById('signup-section')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="btn-primary"
-                            >
-                                Get Started <RocketLaunchIcon fontSize="small" />
-                            </button>
-                            <button className="btn-secondary">
-                                View Success Stories
-                            </button>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        className="hero-right"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: 0.2 }}
-                    >
-                        {/* Interactive Swipe Preview */}
-                        <div className="swipe-hero-container">
-                            <SwipeHeroCard />
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* ── Criteria Strip ──────────────────────────────────────────────── */}
-            <section className="criteria-section">
-                <div className="criteria-container">
-                    <p className="criteria-label">Engineered for deep alignment</p>
-                    <div className="criteria-marquee-wrapper">
+                <div className="hero-grid-3col">
+                    {/* Column 1: Narrative */}
+                    <div className="hero-col hero-col-left">
                         <motion.div
-                            className="criteria-marquee-content"
-                            animate={{ x: [0, -1000] }}
-                            transition={{ repeat: Infinity, duration: 30, ease: 'linear' }}
+                            className="hero-badge"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
                         >
-                            {[...criteriaItems, ...criteriaItems, ...criteriaItems].map((item, idx) => (
-                                <div key={idx} className="criteria-item">
-                                    <span className="criteria-icon">{item.icon}</span>
-                                    {item.label}
-                                </div>
-                            ))}
+                            <VerifiedIcon fontSize="small" /> Elite Discovery Ecosystem
                         </motion.div>
-                        <div className="marquee-fade marquee-fade-left" />
-                        <div className="marquee-fade marquee-fade-right" />
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Signup Section ─────────────────────────────────────────────── */}
-            <section className="signup-section" id="signup-section">
-                <div className="signup-container">
-                    <div className="signup-mesh" />
-                    <div className="signup-header">
-                        <h2 className="section-title">Join the Ecosystem</h2>
-                        <p className="section-subtitle">Connect with India's most ambitious founders today.</p>
+                        <motion.h1
+                            className="hero-title title-massive"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            Build your founding team. <br />
+                            <span className="text-gradient">With precision.</span>
+                        </motion.h1>
+                        <motion.p
+                            className="hero-subtitle"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            Founder Matrimony is the high-trust alternative to casual discovery.
+                            Find partners verified by domain, tenure, and strategic vision.
+                        </motion.p>
+                        <button className="btn-premium btn-premium-secondary" onClick={() => navigate('/filters')}>
+                            Explore Current Pool
+                        </button>
                     </div>
 
-                    {submitted ? (
+                    {/* Column 2: Brand Anchor */}
+                    <div className="hero-col hero-col-center">
                         <motion.div
-                            className="success-overlay"
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                            className="hero-brand-anchor"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 1, ease: "easeOut" }}
                         >
-                            <div className="success-card">
-                                <CelebrationIcon className="success-icon" />
-                                <h3>Welcome to Founder Matrimony</h3>
-                                <p>Onboarding you to the network...</p>
-                            </div>
+                            <img src={FM_logo3} alt="Logo" className="hero-monogram animate-pulse-slight" />
+                            <div className="hero-monogram-glow" />
                         </motion.div>
-                    ) : (
-                        <form className="premium-form" onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group">
-                                    <label>Full Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. Saravana K"
-                                        required
-                                        onChange={e => setForm({ ...form, name: e.target.value })}
+                    </div>
+
+                    {/* Column 3: Profile Carousel (Replaced Swiping) */}
+                    <div className="hero-col hero-col-right">
+                        <div className="hero-trial-label">Verified Builder Network</div>
+                        <div className="hero-profile-carousel-container">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={activeIndex}
+                                    className="hero-carousel-slot"
+                                    initial={{ opacity: 0, y: 20, rotate: 2 }}
+                                    animate={{ opacity: 1, y: 0, rotate: 0 }}
+                                    exit={{ opacity: 0, y: -20, rotate: -2 }}
+                                    transition={{ duration: 0.6, ease: "circOut" }}
+                                >
+                                    <FounderCard founder={mockFounders[activeIndex]} isTop={false} />
+                                </motion.div>
+                            </AnimatePresence>
+
+                            <div className="carousel-indicators">
+                                {mockFounders.slice(0, 5).map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`indicator-dot ${activeIndex === idx ? 'active' : ''}`}
+                                        onClick={() => setActiveIndex(idx)}
                                     />
-                                </div>
-                                <div className="form-group">
-                                    <label>Email or Phone</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Better for auth"
-                                        required
-                                        onChange={e => setForm({ ...form, contact: e.target.value })}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Your Role</label>
-                                    <select required onChange={e => setForm({ ...form, role: e.target.value })}>
-                                        <option value="">Select role</option>
-                                        <option>Tech Founder (CTO)</option>
-                                        <option>Business Founder (CEO)</option>
-                                        <option>Design Founder (CPO)</option>
-                                        <option>Growth & Ops Founder</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Looking For</label>
-                                    <select required onChange={e => setForm({ ...form, lookingFor: e.target.value })}>
-                                        <option value="">Desired partner</option>
-                                        <option>Tech Partner</option>
-                                        <option>Business Partner</option>
-                                        <option>Product Partner</option>
-                                        <option>Strategic Advisor</option>
-                                    </select>
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Industry Interest</label>
-                                    <select required onChange={e => setForm({ ...form, industry: e.target.value })}>
-                                        <option value="">Choose your space</option>
-                                        {industries.map(i => <option key={i}>{i}</option>)}
-                                    </select>
-                                </div>
+                                ))}
                             </div>
-                            <button type="submit" className="form-submit-btn">
-                                Access the Network <ArrowForwardIcon style={{ fontSize: '1.2rem' }} />
-                            </button>
-                        </form>
-                    )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── INLINE SIGNUP FORM (PREMIUM BAR) ── */}
+                <motion.div
+                    className="inline-signup-bar glass shadow-premium"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    <div className="signup-bar-grid">
+                        <div className="bar-field">
+                            <label>Identity</label>
+                            <input type="text" placeholder="Full Name" />
+                        </div>
+                        <div className="bar-divider" />
+                        <div className="bar-field">
+                            <label>Professional Link</label>
+                            <input type="text" placeholder="Email / LinkedIn" />
+                        </div>
+                        <div className="bar-divider" />
+                        <div className="bar-field">
+                            <label>Designation</label>
+                            <select>
+                                <option>Tech Founder</option>
+                                <option>Business Founder</option>
+                                <option>Design Founder</option>
+                                <option>Ops/Other</option>
+                            </select>
+                        </div>
+                        <div className="bar-divider" />
+                        <div className="bar-field field-expand">
+                            <label>Venture Needs</label>
+                            <input type="text" placeholder="e.g. Fintech Tech Partner" />
+                        </div>
+                        <button className="btn-bar-action" onClick={() => navigate('/create-profile')}>
+                            INITIATE PROTOCOL <ArrowForwardIcon />
+                        </button>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* ── CRITERIA HIGHLIGHT STRIP ── */}
+            <section className="criteria-strip">
+                <div className="strip-container">
+                    <motion.div
+                        className="strip-content"
+                        animate={{ x: [0, -1200] }}
+                        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+                    >
+                        {[...criteriaItems, ...criteriaItems, ...criteriaItems].map((item, idx) => (
+                            <div key={idx} className="criteria-pill">
+                                <span className="pill-icon">{item.icon}</span>
+                                <span className="pill-label">{item.label}</span>
+                            </div>
+                        ))}
+                    </motion.div>
                 </div>
             </section>
 
-            {/* ── How It Works ────────────────────────────────────────────────── */}
+            {/* ── HOW IT WORKS ── */}
             <section className="how-it-works">
-                <div className="hiw-container">
-                    <div className="section-intro">
-                        <h2 className="section-title">The Path to Partnership</h2>
-                        <p className="section-subtitle">A data-driven approach to cofounder matching.</p>
-                    </div>
-
-                    <div className="steps-row">
-                        {steps.map((s, i) => (
-                            <motion.div
-                                className="hiw-step"
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.2 }}
-                                viewport={{ once: true }}
-                            >
-                                <div className="step-icon-wrap">
-                                    {s.icon}
-                                    <span className="step-num">{s.step}</span>
-                                </div>
-                                <h3>{s.title}</h3>
-                                <p>{s.desc}</p>
-                            </motion.div>
-                        ))}
-                    </div>
+                <div className="section-header">
+                    <h2 className="text-gradient">Venture Alignment Framework</h2>
+                    <p>India's most systematic approach to founding team development.</p>
+                </div>
+                <div className="steps-grid">
+                    {steps.map((step, idx) => (
+                        <motion.div
+                            key={idx}
+                            className="step-card glass"
+                            whileHover={{ y: -10 }}
+                        >
+                            <div className="step-icon-wrap">{step.icon}</div>
+                            <div className="step-number">0{idx + 1}</div>
+                            <h3>{step.title}</h3>
+                            <p>{step.desc}</p>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
-            {/* ── Founder Spotlight ───────────────────────────────────────────── */}
-            <section className="founder-spotlight">
-                <div className="spotlight-header">
-                    <h2 className="section-title">Discovery Pool</h2>
-                    <p className="section-subtitle">Top talent actively looking for cofounders.</p>
+            {/* ── FOUNDER CAROUSEL (SILKY SMOOTH LOOP) ── */}
+            <section className="founder-carousel">
+                <div className="section-header">
+                    <h2 className="text-gradient">Elite Network Reach</h2>
+                    <p>Direct access to verified builders from the world's leading ecosystems.</p>
                 </div>
-                {/* Horizontal Carousel Preview */}
-                <div className="horizontal-preview">
-                    <div className="preview-track">
-                        {mockFounders.map(f => (
-                            <div className="preview-card-mini" key={f.id}>
-                                <div className="card-top">
-                                    <div className="card-avatar">{f.name[0]}</div>
-                                    <div className="card-meta">
-                                        <span className="card-name">{f.name}</span>
-                                        <span className="card-role">{f.role}</span>
-                                    </div>
-                                </div>
-                                <p className="card-one-liner">{f.bio.split('.')[0]}.</p>
-                                <div className="card-tags">
-                                    {f.industries.slice(0, 2).map(i => <span key={i} className="mini-tag">{i}</span>)}
-                                </div>
+                <div className="carousel-track-wrapper">
+                    <div className="carousel-track animate-scroll">
+                        {[...mockFounders, ...mockFounders, ...mockFounders].map((f, idx) => (
+                            <div key={idx} className="carousel-card-wrap">
+                                <FounderCard founder={f} />
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── Footer ──────────────────────────────────────────────────────── */}
-            <footer className="footer-v2">
-                <div className="footer-v2-container">
-                    <div className="footer-brand">
-                        <img src={FM_logo} alt="FM" className="footer-logo-main" />
-                        <div className="brand-text">
-                            <h3>Founder Matrimony</h3>
-                            <p>Premium Strategic Matching</p>
-                        </div>
-                    </div>
-                    <div className="footer-links-grid">
-                        <div className="link-col">
-                            <h4>Platform</h4>
-                            <a href="#">Network</a>
-                            <a href="#">Success Stories</a>
-                            <a href="#">Events</a>
-                        </div>
-                        <div className="link-col">
-                            <h4>Legal</h4>
-                            <a href="#">Privacy</a>
-                            <a href="#">Terms</a>
-                            <a href="#">Ethics</a>
-                        </div>
-                    </div>
+            {/* ── FINAL CTA ── */}
+            <section className="cta-section">
+                <div className="cta-card glass">
+                    <img src={FM_logo3} alt="Logo" className="cta-logo" />
+                    <h2>Formalize your vision.</h2>
+                    <p>Apply for entry into India's most exclusive cofounder ecosystem.</p>
+                    <button className="btn-premium btn-premium-primary" onClick={() => navigate('/create-profile')}>
+                        APPLY FOR ACCESS <ArrowForwardIcon />
+                    </button>
                 </div>
-                <div className="footer-bottom">
-                    <p>© 2025 Founder Matrimony. High-fidelity strategic connections.</p>
+            </section>
+
+            {/* ── FOOTER ── */}
+            <footer className="landing-footer glass">
+                <div className="footer-content">
+                    <div className="footer-brand">
+                        <img src={FM_logo3} alt="FM" className="footer-logo" />
+                        <div>
+                            <h3>Founder Matrimony</h3>
+                            <p>Premium Strategic Matching Architecture</p>
+                        </div>
+                    </div>
+                    <div className="footer-meta">
+                        <p>© 2025 Founder Matrimony • Built for India's 1% Builder Ecosystem.</p>
+                    </div>
                 </div>
             </footer>
         </div>

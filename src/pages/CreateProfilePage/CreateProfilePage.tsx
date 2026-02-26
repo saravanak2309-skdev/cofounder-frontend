@@ -1,345 +1,259 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import PersonIcon from '@mui/icons-material/Person';
-import WorkIcon from '@mui/icons-material/Work';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import BadgeIcon from '@mui/icons-material/Badge';
+import SchoolIcon from '@mui/icons-material/School';
+import PsychologicalIcon from '@mui/icons-material/Psychology';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import CloseIcon from '@mui/icons-material/Close';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import './CreateProfilePage.css';
 
-const industries = [
-    'FinTech', 'EdTech', 'HealthTech', 'SaaS', 'E-Commerce',
-    'AgriTech', 'CleanTech', 'D2C', 'Logistics', 'AI/ML',
-    'PropTech', 'LegalTech', 'Gaming', 'Media', 'Other',
-];
-
-const roles = [
-    { id: 'tech', label: 'Tech Founder', desc: 'Engineering & Product', icon: <PsychologyIcon /> },
-    { id: 'business', label: 'Business Founder', desc: 'Strategy & Growth', icon: <WorkIcon /> },
-    { id: 'design', label: 'Design Founder', desc: 'UX & Creative', icon: <VisibilityIcon /> },
-    { id: 'ops', label: 'Ops Founder', desc: 'Execution & People', icon: <PersonIcon /> },
+const steps = [
+    { title: 'Identity', icon: <BadgeIcon />, desc: 'Define your founder persona and presence.' },
+    { title: 'Expertise', icon: <SchoolIcon />, desc: 'Validate your professional credentials.' },
+    { title: 'Alignment', icon: <BusinessCenterIcon />, desc: 'State your expectations and focus.' },
+    { title: 'Vision', icon: <PsychologicalIcon />, desc: 'Pitch your breakthrough and core bio.' }
 ];
 
 const CreateProfilePage = () => {
-    const navigate = useNavigate();
-    const [step, setStep] = useState(1);
-    const [skillInput, setSkillInput] = useState('');
-    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [skills, setSkills] = useState(['Solidity', 'Rust']);
+    const [industries, setIndustries] = useState(['Web3', 'AI/ML']);
+    const [newSkill, setNewSkill] = useState('');
+    const [newIndustry, setNewIndustry] = useState('');
+    const [photo, setPhoto] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        name: '', age: '', location: '',
-        education: '', yearsOfExperience: '', industry: '', skills: [] as string[],
-        commitment: 'Full-time', preferredCofounder: '', startupVision: '',
-        bio: '', roleId: '',
-    });
+    const handleNext = () => {
+        if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1);
+        else navigate('/swipe');
+    };
 
-    const handleAddSkill = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && skillInput.trim()) {
-            e.preventDefault();
-            if (!form.skills.includes(skillInput.trim())) {
-                setForm(f => ({ ...f, skills: [...f.skills, skillInput.trim()] }));
-            }
-            setSkillInput('');
+    const addTag = (type: 'skill' | 'industry') => {
+        if (type === 'skill' && newSkill.trim()) {
+            if (!skills.includes(newSkill.trim())) setSkills([...skills, newSkill.trim()]);
+            setNewSkill('');
+        } else if (type === 'industry' && newIndustry.trim()) {
+            if (!industries.includes(newIndustry.trim())) setIndustries([...industries, newIndustry.trim()]);
+            setNewIndustry('');
         }
     };
 
-    const removeSkill = (skill: string) => {
-        setForm(f => ({ ...f, skills: f.skills.filter(s => s !== skill) }));
+    const removeTag = (tag: string, type: 'skill' | 'industry') => {
+        if (type === 'skill') setSkills(skills.filter(s => s !== tag));
+        else setIndustries(industries.filter(i => i !== tag));
     };
 
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhotoPreview(reader.result as string);
-            };
+            reader.onloadend = () => setPhoto(reader.result as string);
             reader.readAsDataURL(file);
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const profile = { ...form, id: Date.now().toString(), photoUrl: photoPreview };
-        localStorage.setItem('userProfile', JSON.stringify(profile));
-        navigate('/swipe');
-    };
-
-    const stepTitles = ['Identity', 'Expertise', 'Vision', 'Presence'];
-    const totalSteps = 4;
-
-    const nextStep = () => {
-        if (step < totalSteps) setStep(step + 1);
-    };
-
-    const prevStep = () => {
-        if (step > 1) setStep(step - 1);
-    };
-
     return (
-        <div className="cp-page">
-            <div className="cp-glow cp-glow-1" />
-            <div className="cp-glow cp-glow-2" />
-
-            <div className="cp-container">
-                <header className="cp-header">
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="cp-badge"
-                    >
-                        Step {step} of {totalSteps}
-                    </motion.div>
-                    <h1 className="cp-title">{stepTitles[step - 1]}</h1>
-                    <p className="cp-subtitle">Crafting your professional founder persona</p>
-
-                    {/* Stepper */}
-                    <div className="cp-stepper">
-                        {stepTitles.map((_, i) => (
-                            <div key={i} className={`cp-step-indicator ${i + 1 <= step ? 'active' : ''}`}>
-                                <div className="cp-step-dot" />
-                                {i < stepTitles.length - 1 && <div className="cp-step-line" />}
+        <div className="onboarding-container">
+            <div className="onboarding-card glass shadow-premium">
+                {/* ── PROGRESS TRACKER ── */}
+                <div className="onboarding-progress">
+                    {steps.map((s, idx) => (
+                        <div key={idx} className={`progress-segment ${idx <= currentStep ? 'active' : ''}`}>
+                            <div className="segment-icon-wrap">
+                                <span className="segment-icon">{s.icon}</span>
+                                <span className="segment-indicator" />
                             </div>
-                        ))}
-                    </div>
-                </header>
+                            <div className="segment-line" />
+                        </div>
+                    ))}
+                </div>
 
-                <form className="cp-form-wrapper" onSubmit={handleSubmit}>
+                <div className="onboarding-content">
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={step}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.4, ease: "circOut" }}
-                            className="cp-card"
+                            key={currentStep}
+                            initial={{ opacity: 0, scale: 0.98, x: 20 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            exit={{ opacity: 0, scale: 0.98, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="step-content"
                         >
-                            {/* Step 1: Basic Details & Role */}
-                            {step === 1 && (
-                                <div className="cp-section">
-                                    <div className="cp-input-group">
-                                        <label>What's your full name?</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Elon Tusk"
-                                            value={form.name}
-                                            onChange={e => setForm({ ...form, name: e.target.value })}
-                                            required
-                                        />
-                                    </div>
+                            <div className="top-meta">
+                                <span className="step-label">Module 0{currentStep + 1}</span>
+                                <div className="step-badge">Verified Discovery</div>
+                            </div>
 
-                                    <div className="cp-role-grid">
-                                        {roles.map(r => (
+                            <h1 className="step-title">{steps[currentStep].title}</h1>
+                            <p className="step-desc">{steps[currentStep].desc}</p>
+
+                            <div className="form-stack">
+                                {currentStep === 0 && (
+                                    <>
+                                        <div className="photo-upload-section">
                                             <div
-                                                key={r.id}
-                                                className={`cp-role-card ${form.roleId === r.id ? 'active' : ''}`}
-                                                onClick={() => setForm({ ...form, roleId: r.id })}
+                                                className="photo-preview-circle"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                style={{ backgroundImage: photo ? `url(${photo})` : 'none' }}
                                             >
-                                                <div className="cp-role-icon">{r.icon}</div>
-                                                <div className="cp-role-info">
-                                                    <h4>{r.label}</h4>
-                                                    <p>{r.desc}</p>
-                                                </div>
-                                                {form.roleId === r.id && <CheckCircleIcon className="cp-check" />}
+                                                {!photo && <AddAPhotoIcon fontSize="large" />}
                                             </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="cp-input-row">
-                                        <div className="cp-input-group">
-                                            <label>Age</label>
                                             <input
-                                                type="number"
-                                                placeholder="28"
-                                                value={form.age}
-                                                onChange={e => setForm({ ...form, age: e.target.value })}
+                                                type="file"
+                                                ref={fileInputRef}
+                                                style={{ display: 'none' }}
+                                                onChange={handlePhotoUpload}
+                                                accept="image/*"
                                             />
+                                            <p className="upload-hint">Upload Founder Presence (Optional)</p>
                                         </div>
-                                        <div className="cp-input-group">
-                                            <label>Location</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Bangalore, IN"
-                                                value={form.location}
-                                                onChange={e => setForm({ ...form, location: e.target.value })}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 2: Background */}
-                            {step === 2 && (
-                                <div className="cp-section">
-                                    <div className="cp-input-group">
-                                        <label>Education & Background</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Stanford MBA / Self-taught Developer"
-                                            value={form.education}
-                                            onChange={e => setForm({ ...form, education: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="cp-input-row">
-                                        <div className="cp-input-group">
-                                            <label>Exp (Years)</label>
-                                            <input
-                                                type="number"
-                                                placeholder="5"
-                                                value={form.yearsOfExperience}
-                                                onChange={e => setForm({ ...form, yearsOfExperience: e.target.value })}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="cp-input-group">
-                                            <label>Primary Industry</label>
-                                            <select
-                                                value={form.industry}
-                                                onChange={e => setForm({ ...form, industry: e.target.value })}
-                                                required
-                                            >
-                                                <option value="">Select Domain</option>
-                                                {industries.map(i => <option key={i} value={i}>{i}</option>)}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="cp-input-group">
-                                        <label>Top Skills (Enter to add)</label>
-                                        <div className="cp-tag-input-wrap">
-                                            <input
-                                                type="text"
-                                                placeholder="AI, GTM, React..."
-                                                value={skillInput}
-                                                onChange={e => setSkillInput(e.target.value)}
-                                                onKeyDown={handleAddSkill}
-                                            />
-                                            <div className="cp-tags">
-                                                {form.skills.map(s => (
-                                                    <span key={s} className="cp-tag">
-                                                        {s} <CloseIcon onClick={() => removeSkill(s)} className="cp-tag-close" />
-                                                    </span>
-                                                ))}
+                                        <div className="input-row">
+                                            <div className="input-group">
+                                                <label>Founder Name</label>
+                                                <input type="text" placeholder="e.g. Kabir Dev" />
+                                            </div>
+                                            <div className="input-group">
+                                                <label>Professional Role</label>
+                                                <select>
+                                                    <option>Tech Founder (CTO)</option>
+                                                    <option>Business Founder (CEO)</option>
+                                                    <option>Design Founder (CPO)</option>
+                                                    <option>Operations Founder (COO)</option>
+                                                </select>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 3: Vision */}
-                            {step === 3 && (
-                                <div className="cp-section">
-                                    <div className="cp-input-group">
-                                        <label>What's the vision?</label>
-                                        <textarea
-                                            placeholder="Briefly describe the world you want to build or the problem you are obsessed with..."
-                                            value={form.startupVision}
-                                            onChange={e => setForm({ ...form, startupVision: e.target.value })}
-                                            rows={4}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="cp-input-group">
-                                        <label>Who are you looking for?</label>
-                                        <select
-                                            value={form.preferredCofounder}
-                                            onChange={e => setForm({ ...form, preferredCofounder: e.target.value })}
-                                            required
-                                        >
-                                            <option value="">Select partner core skill</option>
-                                            <option>Technology (CTO)</option>
-                                            <option>Business (CEO)</option>
-                                            <option>Product & Design (CPO)</option>
-                                            <option>Growth & Market</option>
-                                        </select>
-                                    </div>
-                                    <div className="cp-commitment-wrap">
-                                        <label>Commitment Level</label>
-                                        <div className="cp-toggle-group">
-                                            {['Full-time', 'Part-time'].map(c => (
-                                                <button
-                                                    key={c}
-                                                    type="button"
-                                                    className={form.commitment === c ? 'active' : ''}
-                                                    onClick={() => setForm({ ...form, commitment: c })}
-                                                >
-                                                    {c}
-                                                </button>
-                                            ))}
+                                        <div className="input-group">
+                                            <label>Current Base / Location</label>
+                                            <input type="text" placeholder="e.g. Bangalore, IN" />
                                         </div>
-                                    </div>
-                                </div>
-                            )}
+                                    </>
+                                )}
 
-                            {/* Step 4: Persona */}
-                            {step === 4 && (
-                                <div className="cp-section">
-                                    <div className="cp-photo-section">
-                                        <div
-                                            className="cp-photo-upload"
-                                            onClick={() => fileInputRef.current?.click()}
-                                        >
-                                            {photoPreview ? (
-                                                <img src={photoPreview} alt="Preview" className="cp-preview-img" />
-                                            ) : (
-                                                <div className="cp-upload-placeholder">
-                                                    <CloudUploadIcon />
-                                                    <span>Add Profile Photo</span>
+                                {currentStep === 1 && (
+                                    <>
+                                        <div className="input-group">
+                                            <label>Academic / Professional Institution</label>
+                                            <input type="text" placeholder="e.g. IIT Madras / Ex-Google" />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>Years of Executive Tenure</label>
+                                            <input type="number" placeholder="e.g. 8" />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>Core Expertise Markers</label>
+                                            <div className="tag-input-container">
+                                                <div className="tag-list">
+                                                    {skills.map(skill => (
+                                                        <span key={skill} className="tag-pill">
+                                                            {skill} <CloseIcon onClick={() => removeTag(skill, 'skill')} fontSize="inherit" />
+                                                        </span>
+                                                    ))}
                                                 </div>
-                                            )}
+                                                <div className="tag-input-box">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Add skill..."
+                                                        value={newSkill}
+                                                        onChange={(e) => setNewSkill(e.target.value)}
+                                                        onKeyDown={(e) => e.key === 'Enter' && addTag('skill')}
+                                                    />
+                                                    <button onClick={() => addTag('skill')}>Add</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            onChange={handlePhotoChange}
-                                            style={{ display: 'none' }}
-                                            accept="image/*"
-                                        />
-                                    </div>
+                                    </>
+                                )}
 
-                                    <div className="cp-input-group">
-                                        <label>The Founder's Bio</label>
-                                        <textarea
-                                            placeholder="Talk about your journey, your wins, and your quirks..."
-                                            value={form.bio}
-                                            onChange={e => setForm({ ...form, bio: e.target.value })}
-                                            rows={6}
-                                            required
-                                        />
-                                        <div className="cp-char-count">{form.bio.length}/500</div>
-                                    </div>
-                                </div>
-                            )}
+                                {currentStep === 2 && (
+                                    <>
+                                        <div className="input-row">
+                                            <div className="input-group">
+                                                <label>Commitment Preference</label>
+                                                <select>
+                                                    <option>Full-time (Venture Focus)</option>
+                                                    <option>Part-time (Strategic Advisor)</option>
+                                                </select>
+                                            </div>
+                                            <div className="input-group">
+                                                <label>Discovery Goal</label>
+                                                <select>
+                                                    <option>Looking for Tech Partner</option>
+                                                    <option>Looking for Business Partner</option>
+                                                    <option>Looking for Investment</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="input-group">
+                                            <label>Target Industries & Domains</label>
+                                            <div className="tag-input-container">
+                                                <div className="tag-list">
+                                                    {industries.map(ind => (
+                                                        <span key={ind} className="tag-pill">
+                                                            {ind} <CloseIcon onClick={() => removeTag(ind, 'industry')} fontSize="inherit" />
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <div className="tag-input-box">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Add domain..."
+                                                        value={newIndustry}
+                                                        onChange={(e) => setNewIndustry(e.target.value)}
+                                                        onKeyDown={(e) => e.key === 'Enter' && addTag('industry')}
+                                                    />
+                                                    <button onClick={() => addTag('industry')}>Add</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {currentStep === 3 && (
+                                    <>
+                                        <div className="input-group">
+                                            <label>The Venture Vision (Pitch)</label>
+                                            <textarea
+                                                rows={4}
+                                                placeholder="What massive problem are you solving? Describe your breakthrough vision."
+                                            />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>Short Executive Bio</label>
+                                            <textarea
+                                                rows={3}
+                                                placeholder="A concise summary of your professional journey and founder persona."
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </motion.div>
                     </AnimatePresence>
+                </div>
 
-                    <footer className="cp-footer">
-                        {step > 1 && (
-                            <button type="button" className="btn-ghost" onClick={prevStep}>
-                                <ArrowBackIcon fontSize="small" /> Back
-                            </button>
-                        )}
-                        <div style={{ marginLeft: 'auto' }}>
-                            {step < totalSteps ? (
-                                <button type="button" className="btn-primary" onClick={nextStep}>
-                                    Next Step <ArrowForwardIcon fontSize="small" />
-                                </button>
-                            ) : (
-                                <button type="submit" className="btn-primary btn-submit">
-                                    Launch Profile <RocketLaunchIcon fontSize="small" />
-                                </button>
-                            )}
-                        </div>
-                    </footer>
-                </form>
+                <div className="onboarding-footer">
+                    <button
+                        className="btn-onboarding-back"
+                        disabled={currentStep === 0}
+                        onClick={() => setCurrentStep(currentStep - 1)}
+                    >
+                        <ArrowBackIcon fontSize="small" /> PREVIOUS
+                    </button>
+                    <button className="btn-premium btn-premium-primary" onClick={handleNext}>
+                        {currentStep === steps.length - 1 ? 'INITIATE DISCOVERY' : 'CONTINUE PROTOCOL'}
+                        <ArrowForwardIcon fontSize="small" />
+                    </button>
+                </div>
+
+                <div className="onboarding-trust-footer">
+                    <VerifiedUserIcon fontSize="inherit" />
+                    <span>Founder Matrimony secures your data through strategic encryption protocols.</span>
+                </div>
             </div>
         </div>
     );

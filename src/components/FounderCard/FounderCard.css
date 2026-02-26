@@ -1,258 +1,255 @@
-.fc-container {
-    position: absolute;
+.founder-card {
+    position: relative;
     width: 100%;
+    max-width: 440px;
     height: 100%;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 32px;
-    overflow: hidden;
+    min-height: 580px;
+    border-radius: var(--radius-xl);
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-lg);
     cursor: grab;
     user-select: none;
-    touch-action: none;
-}
-
-.fc-container.is-top {
-    z-index: 10;
-    pointer-events: auto;
-}
-
-.fc-container.is-under {
-    z-index: 5;
-    pointer-events: none;
-}
-
-/* Photo Section */
-.fc-photo-wrapper {
-    position: relative;
-    height: 45%;
-    width: 100%;
     overflow: hidden;
+    box-shadow: var(--shadow-premium);
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
 }
 
-.fc-photo {
+.founder-card:active {
+    cursor: grabbing;
+}
+
+/* IMAGE SECTION */
+.fc-image-container {
+    height: 42%;
+    min-height: 240px;
+    width: 100%;
+    position: relative;
+    background: var(--bg-tertiary);
+}
+
+.fc-photo,
+.fc-photo-placeholder {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
 }
 
-.fc-container:hover .fc-photo {
-    transform: scale(1.05);
+.fc-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--primary);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
 }
 
-.fc-photo-overlay {
+.fc-image-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 60%, var(--bg-secondary) 100%);
+    background: linear-gradient(to top, var(--bg-secondary) 0%, transparent 50%);
 }
 
-.fc-badges {
+.fc-top-badges {
     position: absolute;
-    top: 1.25rem;
-    left: 1.25rem;
+    top: 1.5rem;
+    right: 1.5rem;
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
+    align-items: flex-end;
 }
 
-.fc-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 10px;
-    font-size: 0.65rem;
+.fc-badge-pill {
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.fc-badge-role {
-    background: rgba(0, 212, 255, 0.2);
+.role-badge {
+    background: white;
+    color: black;
+}
+
+.synergy-badge {
+    background: rgba(56, 189, 248, 0.2);
     color: var(--primary);
+    border-color: var(--primary-glow);
 }
 
-.fc-badge-pro {
-    background: rgba(157, 78, 221, 0.2);
-    color: var(--secondary);
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-/* Content Section */
-.fc-content {
-    flex: 1;
-    padding: 1.5rem 2rem 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    position: relative;
-    z-index: 2;
-}
-
-.fc-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.fc-title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.fc-image-content {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 2rem;
+    right: 2rem;
+    color: white;
 }
 
 .fc-name {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: white;
-    letter-spacing: -0.02em;
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
 }
 
-.fc-match-pct {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #00ffa3;
-    padding: 0.25rem 0.6rem;
-    background: rgba(0, 255, 163, 0.1);
-    border-radius: 6px;
-}
-
-.fc-meta-row {
+.fc-location-row {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-muted);
-    font-size: 0.85rem;
     font-weight: 600;
+}
+
+/* DATA SECTION */
+.fc-details-area {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.25rem;
+    background: var(--bg-secondary);
+}
+
+.fc-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
 
 .fc-meta-item {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-}
-
-.fc-meta-dot {
-    opacity: 0.3;
-}
-
-/* Details Grid */
-.fc-details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 16px;
 }
 
-.fc-detail {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.fc-detail-icon {
-    font-size: 1.25rem !important;
+.meta-icon {
     color: var(--primary);
-    opacity: 0.8;
+    font-size: 1.2rem !important;
+    flex-shrink: 0;
 }
 
-.fc-detail-text {
+.meta-data {
     display: flex;
     flex-direction: column;
 }
 
-.fc-detail-label {
+.meta-label {
     font-size: 0.65rem;
-    font-weight: 700;
-    color: var(--text-muted);
     text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 800;
+    letter-spacing: 0.05em;
 }
 
-.fc-detail-val {
-    font-size: 0.85rem;
+.meta-val {
+    font-size: 0.9rem;
     font-weight: 700;
-    color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--text-primary);
 }
 
-/* Tags */
-.fc-tag-group {
+.section-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.05em;
+}
+
+.fc-tag-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.fc-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-.fc-tag {
-    padding: 0.4rem 0.75rem;
-    border-radius: 8px;
+.tag-pill {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-weight: 700;
+    border: 1px solid var(--border);
 }
 
-.fc-tag-skill {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
+.industry-tag {
+    background: rgba(129, 140, 248, 0.1);
+    color: var(--secondary);
+    border-color: var(--secondary-glow);
+}
+
+.skill-tag {
+    background: var(--bg-tertiary);
     color: var(--text-secondary);
 }
 
-/* Bio */
-.fc-bio-section {
-    position: relative;
-}
-
-.fc-bio-text {
+.fc-bio-box p {
     font-size: 0.9rem;
     line-height: 1.5;
     color: var(--text-secondary);
-    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-/* Overlays */
-.fc-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 20;
+.fc-trust-footer {
+    padding: 1.2rem 2rem;
+    border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
     display: flex;
     align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    font-size: 3rem;
-    font-weight: 900;
-    letter-spacing: 0.2em;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #4ade80;
 }
 
-.fc-overlay-pass {
-    background: rgba(255, 77, 77, 0.15);
-    color: #ff4d4d;
-    border: 10px solid #ff4d4d;
-    margin: 20px;
-    border-radius: 40px;
-}
-
-.fc-overlay-connect {
-    background: rgba(0, 255, 163, 0.15);
-    color: #00ffa3;
-    border: 10px solid #00ffa3;
-    margin: 20px;
-    border-radius: 40px;
-}
-
-.fc-bottom-glow {
+.fc-corner-glow {
     position: absolute;
-    bottom: -50px;
-    left: 10%;
-    right: 10%;
-    height: 100px;
-    background: radial-gradient(ellipse at center, var(--primary) 0%, transparent 70%);
-    opacity: 0.15;
+    bottom: -60px;
+    right: -60px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+    z-index: -1;
+    opacity: 0.5;
+}
+
+/* SWIPE OVERLAYS */
+.swipe-overlay {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    font-size: 3.5rem;
+    font-weight: 950;
+    padding: 0.8rem 2.5rem;
+    border: 10px solid;
+    border-radius: var(--radius-lg);
+    z-index: 50;
     pointer-events: none;
-    z-index: 1;
+    letter-spacing: 0.1em;
+}
+
+.overlay-pass {
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.overlay-connect {
+    color: #4ade80;
+    border-color: #4ade80;
 }

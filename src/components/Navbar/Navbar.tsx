@@ -1,56 +1,85 @@
-import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import BoltIcon from '@mui/icons-material/Bolt';
-import PersonIcon from '@mui/icons-material/Person';
-import FM_logo from '../../assets/FM_logo.png';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import FM_logo3 from '../../assets/FM_logo3.png';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import './Navbar.css';
 
 const Navbar = () => {
+    const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
-    const [menuOpen, setMenuOpen] = useState(false);
 
-    const navItems = [
-        { path: '/swipe', label: 'Discover', icon: <LocalFireDepartmentIcon /> },
-        { path: '/matches', label: 'Matches', icon: <ChatBubbleIcon /> },
-        { path: '/filters', label: 'Filters', icon: <BoltIcon /> },
-        { path: '/profile', label: 'Profile', icon: <PersonIcon /> },
+    const navLinks = [
+        { name: 'Discovery', path: '/swipe', icon: <TravelExploreIcon /> },
+        { name: 'Matches', path: '/matches', icon: <ChatBubbleOutlineIcon /> },
+        { name: 'Profile', path: '/profile', icon: <PersonOutlineIcon /> },
     ];
 
-    const isActive = (path: string) => location.pathname === path;
-
     return (
-        <nav className="navbar">
-            <div className="navbar-container">
-                <Link to="/" className="navbar-logo">
-                    <img src={FM_logo} alt="Founder's Matrimony" className="logo-img" />
-                    <span className="logo-text">Founder's Matrimony</span>
+        <nav className="navbar-glass">
+            <div className="nav-container">
+                {/* LOGO SECTION - Properly aligned and balanced */}
+                <Link to="/" className="nav-logo-group">
+                    <img src={FM_logo3} alt="Founder Matrimony" className="nav-logo-img" />
+                    <div className="nav-logo-text">
+                        <span className="logo-top">FOUNDER</span>
+                        <span className="logo-bottom">MATRIMONY</span>
+                    </div>
                 </Link>
 
-                <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-                    <span className={`hamburger-line ${menuOpen ? 'open' : ''}`} />
-                    <span className={`hamburger-line ${menuOpen ? 'open' : ''}`} />
-                    <span className={`hamburger-line ${menuOpen ? 'open' : ''}`} />
-                </button>
-
-                <div className={`navbar-links ${menuOpen ? 'active' : ''}`}>
-                    {navItems.map((item) => (
+                {/* DESKTOP NAV */}
+                <div className="nav-desktop">
+                    {navLinks.map((link) => (
                         <Link
-                            key={item.path}
-                            to={item.path}
-                            className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
-                            onClick={() => setMenuOpen(false)}
+                            key={link.path}
+                            to={link.path}
+                            className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
                         >
-                            <span className="nav-icon">{item.icon}</span>
-                            <span className="nav-label">{item.label}</span>
+                            <span className="nav-link-icon">{link.icon}</span>
+                            {link.name}
                         </Link>
                     ))}
-                    <Link to="/create-profile" className="nav-cta" onClick={() => setMenuOpen(false)}>
-                        + Build Profile
+                    <Link to="/create-profile" className="btn-premium btn-premium-primary nav-cta">
+                        Start Building
                     </Link>
                 </div>
+
+                {/* MOBILE TOGGLE */}
+                <button className="nav-mobile-toggle" onClick={() => setIsOpen(!isOpen)}>
+                    {isOpen ? <CloseIcon /> : <MenuIcon />}
+                </button>
             </div>
+
+            {/* MOBILE MENU */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        className="mobile-menu-overlay"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className="mobile-menu-link"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                {link.icon} {link.name}
+                            </Link>
+                        ))}
+                        <Link to="/create-profile" className="btn-premium btn-premium-primary" onClick={() => setIsOpen(false)}>
+                            Start Building
+                        </Link>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     );
 };

@@ -6,6 +6,8 @@ from app.db.session import get_db
 from app.models.models import User, Profile
 from app.schemas.schemas import ProfileCreate, ProfileUpdate, ProfileResponse
 
+from uuid import UUID
+
 router = APIRouter()
 
 @router.get("/me", response_model=ProfileResponse)
@@ -60,7 +62,7 @@ def update_my_profile(
 
 @router.get("/{founder_id}", response_model=ProfileResponse)
 def get_founder_profile(
-    founder_id: int,
+    founder_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:

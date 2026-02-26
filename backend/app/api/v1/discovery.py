@@ -13,32 +13,12 @@ router = APIRouter()
 def get_potential_matches(
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_user),
-    role: Optional[UserRole] = None,
-    location: Optional[str] = None,
-    min_exp: Optional[int] = Query(0, ge=0),
-    skills: Optional[List[str]] = Query(None),
-    industries: Optional[List[str]] = Query(None),
+    limit: int = Query(20, ge=1, le=50)
 ):
-    query = db.query(Profile).filter(Profile.user_id != current_user.id, Profile.is_visible == True)
-    
-    if role:
-        query = query.filter(Profile.role == role)
-    if location:
-        query = query.filter(Profile.location.ilike(f"%{location}%"))
-    if min_exp:
-        query = query.filter(Profile.years_of_experience >= min_exp)
-    
-    # Filter by skills and industries (if using JSON in MySQL)
-    # Note: For optimized many-to-many, we'd join junction tables
-    # Here we use basic JSON contains if the DB supports it, or manual filtering
-    profiles = query.all()
-    
-    # Filter logic for skills/industries
-    if skills:
-        profiles = [p for p in profiles if any(s in (p.skills or []) for s in skills)]
-    if industries:
-        profiles = [p for p in profiles if any(i in (p.industries or []) for i in industries)]
-        
+    """
+    Fetch a ranked list of potential co-founders using the Synergy Engine.
+    """
+    profiles = MatchingService.get_discovery_queue(db, current_user.id, limit=limit)
     return profiles
 
 @router.post("/swipe")
